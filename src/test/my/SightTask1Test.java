@@ -1,5 +1,5 @@
-package test;
-import main.SightTask1;
+package test.my;
+import main.my.SightTask1;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
