@@ -23,8 +23,8 @@ public class LinearSearch {
     public static int search(String[] seq, int x) {
         int answer = -1;
         for (int i = 0; i < seq.length; i++) {
-            if (Integer.parseInt(seq[i]) == x) {
-                return i;
+            if (Integer.parseInt(seq[i]) == x && answer == -1) {
+                answer = i;
             }
         }
         return answer;
