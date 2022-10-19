@@ -2,6 +2,13 @@ package main.lecture;
 
 import java.util.*;
 
+/*
+Description:
+Дана последовательность чисел длинной N.
+Найти первое (левое) вхождение положительного числа Х в нее
+или вывести -1, если число Х не встречалось
+ */
+
 public class linearSearch {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
