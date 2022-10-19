@@ -17,7 +17,6 @@ public class LinearSearchLastElement {
         scanner.close();
         String[] seq = line.split(" ");
         System.out.println(search(seq, x));
-
     }
 
     public static int search(String[] seq, int x) {
