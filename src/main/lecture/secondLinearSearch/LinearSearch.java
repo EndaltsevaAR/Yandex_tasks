@@ -1,4 +1,4 @@
-package main.lecture;
+package main.lecture.secondLinearSearch;
 
 import java.util.*;
 
@@ -9,7 +9,7 @@ Description:
 или вывести -1, если число Х не встречалось
  */
 
-public class linearSearch {
+public class LinearSearch {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         String line = scanner.nextLine();
