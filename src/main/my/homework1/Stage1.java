@@ -24,6 +24,11 @@ public class Stage1 {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         long number = scanner.nextLong();
+        scanner.close();
+        System.out.println(getHeight(number));
+    }
+
+    public static long getHeight(long number) {
         long count = 1;
         long sum = 0;
 
@@ -35,7 +40,6 @@ public class Stage1 {
                 break;
             }
         }
-        System.out.println(--count);
-        scanner.close();
+        return --count;
     }
 }
