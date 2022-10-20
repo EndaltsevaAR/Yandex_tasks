@@ -17,4 +17,13 @@ public class SellBuy3Test {
         String result = SellBuy3.getDaysForBuyAndSell(number, ints);
         assertEquals(result, "2 5");
     }
+
+    @Test
+    public void test2() {
+        System.out.println("Test from task no profit");
+        int number = 4;
+        List<Integer> ints = Arrays.asList(5, 5, 5, 5);
+        String result = SellBuy3.getDaysForBuyAndSell(number, ints);
+        assertEquals(result, "0 0");
+    }
 }
