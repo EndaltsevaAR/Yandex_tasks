@@ -37,7 +37,7 @@ public class Path2 {
         scanner.close();
     }
 
-    private static String getPath(String line) {
+    public static String getPath(String line) {
     boolean flag = true;
     line = line +  "/";
     if (line.charAt(0) != '/') {
