@@ -1,8 +1,32 @@
 package main.my.homework1;
 
+/*
+Description:
+Канонический путь
+Ограничение времени	1 секунда
+Ограничение памяти	64Mb
+Ввод	стандартный ввод или input.txt
+Вывод	стандартный вывод или output.txt
 
-import java.util.ArrayList;
-import java.util.List;
+По заданной строке, являющейся абсолютным адресом в Unix-системе, вам необходимо получить канонический адрес.
+В Unix-системе "." соответсвутет текущей директории, ".." — родительской директории, при этом будем считать, что любое
+количество точек подряд, большее двух, соответствует директории с таким названием (состоящем из точек). "/" является
+разделителем вложенных директорий, причем несколько "/" подряд должны интерпретироваться как один "/".
+
+Канонический путь должен обладать следующими свойствами:
+1) всегда начинаться с одного "/"
+2) любые две вложенные директории разделяются ровно одним знаком "/"
+3) путь не заканчивается "/" (за исключением корневой директории, состоящего только из символа "/")
+4) в каноническом пути есть только директории, т.е. нет ни одного вхождения "." или ".." как соответствия текущей или
+родительской директории
+
+Формат ввода
+Вводится строка с абсолютным адресом, её длина не превосходит 100.
+
+Формат вывода
+Выведите канонический путь.
+ */
+
 import java.util.Scanner;
 
 public class Path2 {
@@ -14,36 +38,33 @@ public class Path2 {
     }
 
     private static String getPath(String line) {
-        String[] directs = line.split("/");
-        List<String> newDirects = new ArrayList<>();
-        int i, j = 0;
-        for (i = 0; i < directs.length; i++) {
-            if (directs[i].equals("..") ) {
-                newDirects.add(j--, "");
-            } else if (!directs[i].equals(".")) {
-                newDirects.add(j++, directs[i]);
-            }
-            if (j < 0) {
-                return "/";
-            }
-        }
-        StringBuilder stringBuilder = new StringBuilder();
-        for (int k = 0; k < j; k++) {
-            stringBuilder.append("/").append(newDirects.get(k));
-        }
-        line = stringBuilder.toString().trim();
-        while (line.contains("//")) {
-            line = line.replaceAll("//", "/");
-        }
-          /*
-        if (line.lastIndexOf("/") == line.length() - 1 && line.length() > 1) {
-            line = line.substring(0, line.length() - 1);
-        }
-           */
+    boolean flag = true;
+    line = line +  "/";
+    if (line.charAt(0) != '/') {
+        line = "/" + line;
+    }
 
-        if (line.length() == 0) {
-            line = "/";
+    while (flag) {
+        if (line.contains("/./")) {
+            line = line.replaceAll("/\\./", "/");
+        } else if (line.contains("//")) {
+            line = line.replaceAll("//", "/");
+        } else if (line.contains("/../")) {
+            int position = line.indexOf("/../");
+            if (position == 0) {
+                line = line.substring(3);
+            } else {
+                int prev = line.substring(0, position).lastIndexOf("/");
+                line = line.substring(0, prev) + line.substring(position + 3);
+            }
+        } else {
+            flag = false;
         }
-        return line;
+    }
+
+    if (line.charAt(line.length() - 1) == '/' && !line.equals("/")) {
+        line = line.substring(0, line.length() - 1);
+    }
+    return line;
     }
 }
