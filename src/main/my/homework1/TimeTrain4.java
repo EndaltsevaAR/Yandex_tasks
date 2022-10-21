@@ -45,7 +45,8 @@ public class TimeTrain4 {
         }
 
         timeTrains.sort(Comparator.naturalOrder());
-        int min = Math.min((timeTrains.get(1) - timeTrains.get(0)), Math.abs(1440 - (timeTrains.get(1) - timeTrains.get(0))));
+        int min = Math.min((timeTrains.get(1) - timeTrains.get(0)),
+                Math.abs(1440 - (timeTrains.get(1) - timeTrains.get(0))));
         for (int i = 1; i < timeTrains.size(); i++) {
             int tempDiff = timeTrains.get(i) - timeTrains.get(i - 1);
             if (tempDiff < min) {
@@ -55,7 +56,8 @@ public class TimeTrain4 {
             }
         }
         // check first and last
-        int tempDiff = Math.min((timeTrains.get(timeTrains.size() - 1) - timeTrains.get(0)), Math.abs(1440 - (timeTrains.get(timeTrains.size() - 1) - timeTrains.get(0))));
+        int tempDiff = Math.min((timeTrains.get(timeTrains.size() - 1) - timeTrains.get(0)), Math.abs(1440 -
+                (timeTrains.get(timeTrains.size() - 1) - timeTrains.get(0))));
         if (tempDiff < min) {
             min = tempDiff;
         }
