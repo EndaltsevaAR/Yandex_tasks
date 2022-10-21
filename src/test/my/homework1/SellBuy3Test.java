@@ -22,4 +22,22 @@ public class SellBuy3Test {
         String result = SellBuy3.getDaysForBuyAndSell(ints);
         assertEquals(result, "0 0");
     }
+
+    @Test
+    public void test3() {
+        System.out.println("Test from task - my solution");
+        // int number = 6;
+        int[] ints = {10, 3, 5, 3 ,11, 9};
+        String result = SellBuy3.getDaysForBuyAndSellLong(ints);
+        assertEquals(result, "2 5");
+    }
+
+    @Test
+    public void test4() {
+        System.out.println("Test from task no profit - my solution");
+        // int number = 4;
+        int[] ints = {5, 5, 5, 5};
+        String result = SellBuy3.getDaysForBuyAndSellLong(ints);
+        assertEquals(result, "0 0");
+    }
 }
