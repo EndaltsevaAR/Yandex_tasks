@@ -1,6 +1,9 @@
 package main.my.homework1;
+// There is 3 solution:
+// 1 - getDaysForBuyAndSell - solution with doubles, can de not correct with certain costs,
+// 2 - getDaysForBuyAndSellLong - my solution, correct, but long,
+/* 3 - getSolution - total correct solution, but from system (translate from Python to Java)(for example for stress tests)
 
-/*
 Description:
 Купить и продать
 Ограничение времени	1 секунда
@@ -38,9 +41,33 @@ public class SellBuy3 {
         for (int i = 0; i < numberDay; i++) {
             days[i] = Integer.parseInt(temp[i]);
         }
-        // System.out.println(getDaysForBuyAndSellLong(days));
+        System.out.println("Long solution");
+        System.out.println(getDaysForBuyAndSellLong(days));
+        System.out.println("Solution with double");
         System.out.println(getDaysForBuyAndSell(days));
+        System.out.println("Correct solution");
+        System.out.println(getSolution(days));
         scanner.close();
+    }
+
+    public static String getSolution(int[] days) {
+        int bestBuyDay = 0;
+        int bestSellDay = 0;
+        int minCostDay = 0;
+        for (int i = 1; i < days.length; i++) {
+            if (days[bestSellDay] * days[minCostDay] < days[bestBuyDay] * days[i]) {
+                bestBuyDay = minCostDay;
+                bestSellDay = i;
+            }
+            if (days[minCostDay] > days[i]) {
+                minCostDay = i;
+            }
+        }
+        if (bestSellDay == 0 && bestBuyDay == 0) {
+            return "0 0";
+        } else {
+            return (bestBuyDay + 1) + " " + (bestSellDay + 1);
+        }
     }
 
     public static String getDaysForBuyAndSell(int[] days) {
