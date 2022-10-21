@@ -2,7 +2,7 @@ package main.my.homework1;
 
 import java.util.Scanner;
 
-public class SellBuyWithFile3 {
+public class SellBuyWithExtr3 {
     public static final double MONEY = 1000;
     int[] min;
     int[] max;
@@ -11,7 +11,7 @@ public class SellBuyWithFile3 {
     double[] prices;
 
     public static void main(String[] args) throws Exception {
-        SellBuyWithFile3 main = new SellBuyWithFile3();
+        SellBuyWithExtr3 main = new SellBuyWithExtr3();
         main.run();
     }
 
@@ -103,7 +103,7 @@ public class SellBuyWithFile3 {
 
         public double value(){
 
-            return SellBuyWithFile3.MONEY / prices[min] * (prices[max] - prices[min]);
+            return SellBuyWithExtr3.MONEY / prices[min] * (prices[max] - prices[min]);
         }
     }
 }
