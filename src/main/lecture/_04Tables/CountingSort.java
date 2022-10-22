@@ -15,8 +15,8 @@ public class CountingSort {
         int maxList = nums.stream().max(Comparator.naturalOrder()).get();
         int length = maxList - minList + 1;
         int[] counts = new int[length];
-        for (int i = 0; i < nums.size(); i++) {
-            counts[nums.get(i) - minList] += 1;
+        for (Integer num : nums) {
+            counts[num - minList] += 1;
         }
         List<Integer> answer = new ArrayList<>();
         for (int i = 0; i < length; i++) {
