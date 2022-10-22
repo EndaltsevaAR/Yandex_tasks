@@ -1,7 +1,6 @@
 package test.my.homework1;
 import static org.junit.Assert.*;
 import main.my.homework1.BreakPalind5;
-import main.my.homework1.TimeTrain4;
 import org.junit.Test;
 
 public class BreakPalind5Test {
