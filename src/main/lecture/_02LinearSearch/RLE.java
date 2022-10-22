@@ -1,4 +1,4 @@
-package main.lecture.secondLinearSearch;
+package main.lecture._02LinearSearch;
 /*
 Description:
 Дана строка (возможно, пустая), состоящая из букв A-Z:

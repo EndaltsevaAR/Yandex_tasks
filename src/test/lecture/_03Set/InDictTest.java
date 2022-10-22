@@ -1,8 +1,8 @@
-package test.lecture.thirdSet;
+package test.lecture._03Set;
 
 import static org.junit.Assert.*;
 
-import main.lecture.thirdSet.InDict;
+import main.lecture._03Set.InDict;
 import org.junit.Test;
 
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package main.lecture.thirdSet;
+package main.lecture._03Set;
 
 import java.util.*;
 

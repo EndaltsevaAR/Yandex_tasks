@@ -1,4 +1,4 @@
-package main.lecture.first;
+package main.lecture._01;
 
 /*
 Description:

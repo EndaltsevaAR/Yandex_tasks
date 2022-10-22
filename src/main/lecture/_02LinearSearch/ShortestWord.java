@@ -1,4 +1,4 @@
-package main.lecture.secondLinearSearch;
+package main.lecture._02LinearSearch;
 /*
 Description:
 Дана последовательность слов. Вывести два самых коротких слова через пробел
