@@ -1,5 +1,11 @@
 package main.lecture._04Tables;
 
+/*
+Description:
+Дано два числа Х и У без ведущих нулей.
+Необходимо проверить, можно ли получить первое из второго перестановкой цифр
+ */
+
 import java.util.Scanner;
 
 public class CompareNumbers {
