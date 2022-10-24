@@ -22,7 +22,7 @@ Description:
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class RepeatNumber {
+public class RepeatNumber2 {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         String line = scanner.nextLine();

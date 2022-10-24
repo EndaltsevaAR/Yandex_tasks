@@ -1,5 +1,5 @@
 package test.my.homework2;
-import main.my.homework2.RepeatNumber;
+import main.my.homework2.RepeatNumber2;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -14,7 +14,7 @@ public class RepeatNumberTest {
         String[] lenAndRepeat = line.split(" ");
         String lineNums = "1 2 3 1";
         List<Integer> numbers = Arrays.stream(lineNums.split(" ")).map(Integer::parseInt).toList();
-        String result = RepeatNumber.solution(lenAndRepeat, numbers);
+        String result = RepeatNumber2.solution(lenAndRepeat, numbers);
         String answer = "NO";
         assertEquals(result, answer);
     }
@@ -27,7 +27,7 @@ public class RepeatNumberTest {
         String[] lenAndRepeat = line.split(" ");
         String lineNums = "1 2 3 1 2 3";
         List<Integer> numbers = Arrays.stream(lineNums.split(" ")).map(Integer::parseInt).toList();
-        String result = RepeatNumber.solution(lenAndRepeat, numbers);
+        String result = RepeatNumber2.solution(lenAndRepeat, numbers);
         String answer = "NO";
         assertEquals(result, answer);
     }
@@ -39,7 +39,7 @@ public class RepeatNumberTest {
         String[] lenAndRepeat = line.split(" ");
         String lineNums = "1 0 1 1";
         List<Integer> numbers = Arrays.stream(lineNums.split(" ")).map(Integer::parseInt).toList();
-        String result = RepeatNumber.solution(lenAndRepeat, numbers);
+        String result = RepeatNumber2.solution(lenAndRepeat, numbers);
         String answer = "YES";
         assertEquals(result, answer);
     }
