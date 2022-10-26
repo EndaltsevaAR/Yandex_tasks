@@ -1,4 +1,4 @@
-package test.lecture._06BinarySearch;
+package main.lecture._06BinarySearch;
 
 /* Время поиска O(log)"""
 Левый бинпоиск - первое подходящее значение
