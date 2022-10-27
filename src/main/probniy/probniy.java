@@ -1,4 +1,4 @@
-package main.my;
+package main.probniy;
 
 import java.util.Scanner;
 
