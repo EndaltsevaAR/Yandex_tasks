@@ -1,12 +1,8 @@
 package test.my.rome;
-import main.my.rome.SightTask1;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-
-import static org.junit.Assert.assertEquals;
-
 public class SightTask1Test {
 
     @Test
@@ -15,8 +11,6 @@ public class SightTask1Test {
         ByteArrayInputStream in = new ByteArrayInputStream(testString.getBytes());
         InputStream inputStream = System.in;
         System.setIn(in);
-        SightTask1 sightTask1 = new SightTask1();
-
         System.setIn(inputStream);
     }
 
