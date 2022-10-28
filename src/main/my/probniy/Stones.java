@@ -1,4 +1,4 @@
-package main.probniy;
+package main.my.probniy;
 /*
 Description:
 Камни и украшения [тестовая задача]
