@@ -13,19 +13,13 @@ Description:
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class PitCraft {
-    // public static void main(String[] args) {
-    // Scanner scanner = new Scanner(System.in);
-    // String line = scanner.nextLine();
-    // List<Integer> heights = Arrays.stream(line.split(" ")).map(s ->
-    // Integer.parseInt(s.trim())).toList();
-    // scanner.close();
-    // System.out.println(rain(heights));
-    // }
 
-    private static int rain(List<Integer> heights) {
+    public int rain(String line) {
+        List<Integer> heights = Arrays.stream(line.split(" ")).map(s -> Integer.parseInt(s.trim()))
+                .collect(Collectors.toList());
         int maxHeightPosition = 0;
         for (int i = 0; i < heights.size(); i++) {
             if (heights.get(i) > heights.get(maxHeightPosition)) {

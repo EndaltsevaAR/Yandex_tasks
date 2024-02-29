@@ -1,7 +1,5 @@
 package yandex.lecture._02LinearSearch;
 
-import java.util.*;
-
 /*
 Description:
 Дана последовательность чисел длинной N.
@@ -10,16 +8,9 @@ Description:
  */
 
 public class LinearSearch {
-    // public static void main(String[] args) {
-    // Scanner scanner = new Scanner(System.in);
-    // String line = scanner.nextLine();
-    // int x = scanner.nextInt();
-    // scanner.close();
-    // String[] seq = line.split(" ");
-    // System.out.println(search(seq, x));
-    // }
 
-    public static int search(String[] seq, int x) {
+    public int search(String line, int x) {
+        String[] seq = line.split(" ");
         int answer = -1;
         for (int i = 0; i < seq.length; i++) {
             if (Integer.parseInt(seq[i]) == x && answer == -1) {

@@ -6,18 +6,11 @@ Description:
 Найти минимальное четное число в последовательности или вывести -1, если такое
 число не существует
  */
-import java.util.Scanner;
 
 public class MinEven {
-    // public static void main(String[] args) {
-    // Scanner scanner = new Scanner(System.in);
-    // String line = scanner.nextLine();
-    // scanner.close();
-    // String[] seq = line.split(" ");
-    // System.out.println(minEven(seq));
-    // }
 
-    public static int minEven(String[] seq) {
+    public int minEven(String line) {
+        String[] seq = line.split(" ");
         int answer = -1;
         boolean flag = false;
         for (String s : seq) {

@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class UsedLetterTest {
     private static UsedLetter usedLetter;
@@ -23,23 +23,26 @@ public class UsedLetterTest {
     }
 
     @Test
-    public void EmptyString() {
+    void OnelLetter() {
+        assertEquals('a', usedLetter.findMostUsedLetter("a"));
+    }
+
+    @Test
+    void EmptyString() {
         try {
             assertNull(usedLetter.findMostUsedLetter(""));
         } catch (NullPointerException e) {
             System.err.println("Null is");
         }
-
     }
 
     @Test
-    public void NullString() {
+    void NullString() {
         try {
             assertNull(usedLetter.findMostUsedLetter(null));
         } catch (NullPointerException e) {
             System.err.println("Null is");
         }
-
     }
 
     @ParameterizedTest
@@ -47,4 +50,5 @@ public class UsedLetterTest {
     void EquualNumbersOfCountlLetter(String line) {
         assertEquals('a', usedLetter.findMostUsedLetter(line));
     }
+
 }

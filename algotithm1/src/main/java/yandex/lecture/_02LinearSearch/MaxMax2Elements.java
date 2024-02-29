@@ -10,20 +10,11 @@ Description:
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 public class MaxMax2Elements {
-    // public static void main(String[] args) {
-    // Scanner scanner = new Scanner(System.in);
-    // String line = scanner.nextLine();
-    // scanner.close();
-    // String[] seq = line.split(" ");
-    // for (Integer integer : maxMax(seq)) {
-    // System.out.println(integer);
-    // }
-    // }
 
-    private static List<Integer> maxMax(String[] seq) {
+    public List<Integer> maxMax(String line) {
+        String[] seq = line.split(" ");
         int max1 = Math.max(Integer.parseInt(seq[0]), Integer.parseInt(seq[1]));
         int max2 = Math.min(Integer.parseInt(seq[0]), Integer.parseInt(seq[1]));
         for (int i = 2; i < seq.length; i++) {
