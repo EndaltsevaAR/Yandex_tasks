@@ -1,7 +1,7 @@
 package yandex.lecture._02LinearSearch;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -44,7 +44,7 @@ public class LinearSearchTest {
 
     @Test
     void twoNumbers() {
-        assertEquals(0, linearSearch.search("1 1 3", 4));
+        assertEquals(-1, linearSearch.search("1 1 3", 4));
     }
 
 }

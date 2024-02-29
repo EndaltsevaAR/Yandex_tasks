@@ -44,7 +44,7 @@ public class LinearSearchLastElementTest {
 
     @Test
     void twoNumbers() {
-        assertEquals(1, linearSearchLastElement.search("1 1 3", 4));
+        assertEquals(-1, linearSearchLastElement.search("1 1 3", 4));
     }
 
 }

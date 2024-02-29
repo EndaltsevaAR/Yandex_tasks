@@ -1,6 +1,6 @@
 package yandex.lecture._02LinearSearch;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.BeforeAll;
@@ -10,7 +10,7 @@ public class MinEvenTest {
     private static MinEven min;
 
     @BeforeAll
-    public void init() {
+    public static void init() {
         min = new MinEven();
     }
 
@@ -39,7 +39,7 @@ public class MinEvenTest {
 
     @Test
     void nullLine() {
-        assertThrows(NumberFormatException.class,
+        assertThrows(NullPointerException.class,
                 () -> {
                     min.minEven(null);
                 });

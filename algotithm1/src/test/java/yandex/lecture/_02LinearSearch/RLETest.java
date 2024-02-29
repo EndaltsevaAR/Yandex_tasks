@@ -1,7 +1,6 @@
 package yandex.lecture._02LinearSearch;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -10,7 +9,7 @@ public class RLETest {
     private static RLE rle;
 
     @BeforeAll
-    public void init() {
+    public static void init() {
         rle = new RLE();
     }
 

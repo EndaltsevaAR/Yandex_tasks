@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class SiteEnterTimeTest {
 
     @Test
-    public void test() {
+    void test() {
         int n = 4;
         int[] enters = new int[] { 1, 3, 2, 5 };
         int[] outs = new int[] { 9, 6, 3, 7 };

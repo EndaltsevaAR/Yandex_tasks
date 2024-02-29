@@ -11,7 +11,7 @@ public class MaxMax2ElementsTest {
     private static MaxMax2Elements max2Elements;
 
     @BeforeAll
-    public void init() {
+    public static void init() {
         max2Elements = new MaxMax2Elements();
     }
 
