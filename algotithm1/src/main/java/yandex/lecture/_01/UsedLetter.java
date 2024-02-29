@@ -28,7 +28,6 @@ public class UsedLetter {
                 answerChar = line.charAt(i);
             }
         }
-        System.out.println(answerChar);
         return answerChar;
     }
 }
