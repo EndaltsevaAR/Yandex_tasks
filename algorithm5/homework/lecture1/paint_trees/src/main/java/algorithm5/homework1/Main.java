@@ -48,7 +48,7 @@ public class Main {
         scanner.close();
     }
 
-    private static int getTreesNumber(String vasyaInfo, String mashaInfo) {
+    public static int getTreesNumber(String vasyaInfo, String mashaInfo) {
         int backetVasyaP = Integer.parseInt(vasyaInfo.split(" ")[0]);
         int lenghtVasyaV = Integer.parseInt(vasyaInfo.split(" ")[1]);
         int backetMashaQ = Integer.parseInt(mashaInfo.split(" ")[0]);
@@ -63,7 +63,6 @@ public class Main {
             treesSet.add(backetMashaQ + i);
             treesSet.add(backetMashaQ - i);
         }
-
         return treesSet.size();
     }
 }
