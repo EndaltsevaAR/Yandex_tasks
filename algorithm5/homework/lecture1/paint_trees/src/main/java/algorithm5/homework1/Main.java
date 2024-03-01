@@ -1,9 +1,5 @@
 package algorithm5.homework1;
 
-import java.util.HashSet;
-import java.util.Scanner;
-import java.util.Set;
-
 /**
  * Вася и Маша участвуют в субботнике и красят стволы деревьев в белый цвет.
  * Деревья растут вдоль улицы через равные промежутки в 1 метр. Одно из деревьев
@@ -38,6 +34,8 @@ import java.util.Set;
  * 25
  */
 
+import java.util.Scanner;
+
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -54,15 +52,22 @@ public class Main {
         int backetMashaQ = Integer.parseInt(mashaInfo.split(" ")[0]);
         int lenghtMashaM = Integer.parseInt(mashaInfo.split(" ")[1]);
 
-        Set<Integer> treesSet = new HashSet<>();
-        for (int i = 0; i <= lenghtVasyaV; i++) {
-            treesSet.add(backetVasyaP + i);
-            treesSet.add(backetVasyaP - i);
+        int maxLen = Math.max(lenghtMashaM, lenghtVasyaV);
+        int minLen = Math.min(lenghtMashaM, lenghtVasyaV);
+
+        int diffBackets = Math.abs(backetMashaQ - backetVasyaP);
+        if (diffBackets == 0) {
+            return (1 + maxLen * 2);
+        } else if (diffBackets > maxLen + minLen) {
+            return (2 + 2 * (maxLen + minLen));
+        } else if (diffBackets > maxLen) {
+            return (1 + maxLen * 2) + minLen + (diffBackets - maxLen);
+        } else {
+            int edge = minLen - (maxLen - diffBackets);
+            if (edge < 0) {
+                edge = 0;
+            }
+            return (1 + maxLen * 2) + edge;
         }
-        for (int i = 0; i <= lenghtMashaM; i++) {
-            treesSet.add(backetMashaQ + i);
-            treesSet.add(backetMashaQ - i);
-        }
-        return treesSet.size();
     }
 }

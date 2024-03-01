@@ -30,4 +30,9 @@ public class MainTest {
         assertEquals(1, Main.getTreesNumber("0 0", "0 0"));
     }
 
+    @Test
+    void intersectionTrees() {
+        assertEquals(7, Main.getTreesNumber("0 3", "2 0"));
+    }
+
 }
