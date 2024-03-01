@@ -16,19 +16,24 @@ public class SumInSetTest {
 
     @Test
     void SumInLine() {
-        assertEquals("2, 5", sumInSet.solution("1 3 5 8 2", 7));
+        assertEquals("2, 5", sumInSet.findSumNumbers("1 3 5 8 2", 7));
+    }
+
+    @Test
+    void TwoSumInLine() {
+        assertEquals("2, 5", sumInSet.findSumNumbers("1 3 5 8 2 6", 7)); // 2+5 and 1+6
     }
 
     @Test
     void SumNotInLine() {
-        assertEquals("0, 0", sumInSet.solution("1 3 5 8 2", 123));
+        assertEquals("0, 0", sumInSet.findSumNumbers("1 3 5 8 2", 123));
     }
 
     @Test
     void SumEmptyLine() {
         assertThrows(NumberFormatException.class,
                 () -> {
-                    sumInSet.solution("", 123);
+                    sumInSet.findSumNumbers("", 123);
                 });
     }
 
@@ -36,7 +41,7 @@ public class SumInSetTest {
     void SumInNullLine() {
         assertThrows(NullPointerException.class,
                 () -> {
-                    sumInSet.solution(null, 123);
+                    sumInSet.findSumNumbers(null, 123);
                 });
     }
 }

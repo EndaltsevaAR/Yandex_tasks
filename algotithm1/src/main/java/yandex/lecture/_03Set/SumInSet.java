@@ -10,17 +10,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class SumInSet {
-    // public static void main(String[] args) {
-    // Scanner scanner = new Scanner(System.in);
-    // String line = scanner.nextLine();
-    // List<Integer> nums = Arrays.stream(line.split(" ")).map(s ->
-    // Integer.parseInt(s.trim())).toList();
-    // int x = scanner.nextInt();
-    // scanner.close();
-    // System.out.println(solution(nums, x));
-    // }
 
-    public String solution(String line, int x) {
+    public String findSumNumbers(String line, int x) {
         Set<Integer> nums = Arrays.stream(line.split(" ")).map(s -> Integer.parseInt(s.trim()))
                 .collect(Collectors.toSet());
         Set<Integer> prevNums = new HashSet<>();

@@ -1,29 +1,42 @@
 package yandex.lecture._03Set;
 
-import yandex.lecture._03Set.InDict;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 public class InDictTest {
+    private static InDict inDict;
 
-    // @Test
-    // public void test1() {
-    // System.out.println("Test from task");
-    // String dictLine = "abc def";
-    // List<String> dict = Arrays.stream(dictLine.split("
-    // ")).collect(Collectors.toList());
+    @BeforeAll
+    public static void init() {
+        inDict = new InDict();
+    }
 
-    // String textLine = "abc de";
-    // List<String> text = Arrays.stream(textLine.split("
-    // ")).collect(Collectors.toList());
+    @Test
+    void normalTest() {
+        List<String> result = inDict.enterWordsAtDict("abc def", "abc de");
+        List<String> act = new ArrayList<>();
+        act.add("abc");
+        act.add("de");
+        assertEquals(act, result);
+    }
 
-    // List<String> result = InDict.solution(dict, text);
-    // List<String> act = new ArrayList<>();
-    // act.add("abc");
-    // act.add("de");
-    // assertEquals(result, act);
-    // }
+    @Test
+    void WordNotInDict() {
+        List<String> result = inDict.enterWordsAtDict("abc def", "abc ert");
+        List<String> act = new ArrayList<>();
+        act.add("abc");
+        assertEquals(act, result);
+    }
+
+    @Test
+    void NotOneWordInDict() {
+        List<String> result = inDict.enterWordsAtDict("abc def", "ert efdf");
+        List<String> act = new ArrayList<>();
+        assertEquals(act, result);
+    }
 }
