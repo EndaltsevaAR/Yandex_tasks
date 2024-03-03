@@ -9,16 +9,22 @@ public class MainTest {
 
     @Test
     void contextTestOneDay() {
-        assertEquals(216, Main.getFinalProfit(21, 108, 1));
+        assertEquals(216, Main.getFinalProfit(21, 108, 1).intValue());
+    }
+
+    @Test
+    void contextTestDayWithZiros() {
+        assertEquals(21600, Main.getFinalProfit(21, 108, 3).intValue());
     }
 
     @Test
     void contextTestNoProfit() {
-        assertEquals(-1, Main.getFinalProfit(5, 12, 4));
+        assertEquals(-1, Main.getFinalProfit(5, 12, 4).intValue());
     }
 
     @Test
-    void maxEnters() {
-        assertEquals(-1, Main.getFinalProfit(1000000000, 1000000000, 100000));
+    void contextTestMaxStart() {
+        assertEquals(294209208, Main.getFinalProfit(29420920, 98069736, 1).intValue());
     }
+
 }
