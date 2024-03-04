@@ -52,9 +52,9 @@ public class Main {
 
         String maxAnswer = DayOfWeek.of(maxDayOfWeekNumber).toString().toLowerCase();
         String minAnswer = DayOfWeek.of(minDayOfWeekNumber).toString().toLowerCase();
-        
-        return Character.toUpperCase(maxAnswer.charAt(0)) + maxAnswer.substring(1) + " "
-                + Character.toUpperCase(minAnswer.charAt(0)) + minAnswer.substring(1);
+
+        return (Character.toUpperCase(maxAnswer.charAt(0)) + maxAnswer.substring(1) + " "
+                + Character.toUpperCase(minAnswer.charAt(0)) + minAnswer.substring(1)).trim();
     }
 
     private static Integer getVacationsAtAnotherDays(Integer key, int[] holidaysDayOfWeek) {
