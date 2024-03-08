@@ -41,4 +41,10 @@ public class MainTest {
         assertTrue("YES\n0.0000000000".equals(Main.isBoyMeetings(6, 1, 0, 5, 0)));
     }
 
+    @Test
+    void contextTest7() {
+        assertTrue(
+                "YES\n2.4075923389".equals(Main.isBoyMeetings(615143346, 79387687, -80123649, 306422480, -80123649)));
+    }
+
 }
