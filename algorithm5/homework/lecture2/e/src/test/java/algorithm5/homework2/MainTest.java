@@ -23,15 +23,12 @@ public class MainTest {
     }
 
     @Test
-    void contextTest7() {
-        String[] berries = new String[7];
-        berries[0] = "160714711 449656269";
-        berries[1] = "822889311 446755913";
-        berries[0] = "135599877 389312924";
-        berries[1] = "448565595 480845266";
-        berries[1] = "561330066 605997004";
-        berries[0] = "61020590 573085537";
-        berries[1] = "715477619 181424399";
-        assertTrue("1471516684\n2 7 5 1 3 4 6".equals(Main.snailGo(berries)));
+    void contextTest4() {
+        String[] berries = new String[3];
+        berries[0] = "100 99";
+        berries[1] = "8 2";
+        berries[2] = "4 4";
+        assertTrue("106\n2 3 1".equals(Main.snailGo(berries)));
     }
+
 }
