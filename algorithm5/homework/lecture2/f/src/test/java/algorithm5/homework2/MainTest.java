@@ -12,7 +12,7 @@ public class MainTest {
 
     @Test
     void contextTest2() {
-        assertEquals(5, Main.getMaxProfit(4, "1 2 3 4 5", "15 15 2"));
+        assertEquals(4, Main.getMaxProfit(5, "1 2 3 4 5", "15 15 2"));
     }
 
     @Test

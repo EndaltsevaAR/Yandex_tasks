@@ -23,18 +23,29 @@ public class Main {
         long kDeltaSpeed = Long.parseLong(speeds.split(" ")[2]);
 
         long maxProfit = 0L;
+
+        long minMoves = (aMinSpeed / kDeltaSpeed) % numberCells; // убрать в отдельный метод
+        if (aMinSpeed % kDeltaSpeed == 0 && minMoves > 0) {
+            minMoves--;
+        }
+
         for (long speed = aMinSpeed; speed <= bMaxSpeed; speed++) {
             long moves = (speed / kDeltaSpeed) % numberCells;
             if (speed % kDeltaSpeed == 0 && moves > 0) {
                 moves--;
             }
-            for (long i = 0; i <= moves; i++) {
+            for (long i = minMoves; i <= moves; i++) {
                 long clockwise = cells[(int) i];
                 if (clockwise > maxProfit) {
                     maxProfit = clockwise;
                 }
 
-                long counterclockwise = cells[numberCells - 1 - (int) i];
+                long counterclockwise;
+                if (i == 0) {
+                    counterclockwise = cells[0];
+                } else {
+                    counterclockwise = cells[numberCells - (int) i];
+                }
                 if (counterclockwise > maxProfit) {
                     maxProfit = counterclockwise;
                 }
