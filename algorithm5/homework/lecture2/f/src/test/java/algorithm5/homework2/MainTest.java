@@ -20,4 +20,16 @@ public class MainTest {
         assertEquals(5, Main.getMaxProfit(5, "5 4 3 2 1", "2 5 2"));
     }
 
+    @Test
+    void contextTestSpeeds() {
+        assertEquals(1, Main.getMaxProfit(1, "1 2 3 4 5", "1 1 2"));
+    }
+
+    // 8
+    // 952 159 945 463 133 101 767 314
+    // 47 448 28
+    @Test
+    void contextTest22() {
+        assertEquals(952, Main.getMaxProfit(1, "952 159 945 463 133 101 767 314", "47 448 28"));
+    }
 }
