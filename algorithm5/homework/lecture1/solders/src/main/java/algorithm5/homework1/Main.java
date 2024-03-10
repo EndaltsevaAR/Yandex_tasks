@@ -13,32 +13,41 @@ public class Main {
     }
 
     public static int getNumberSteps(int xOurSoldiers, int yBuilding, int pEnemySoldiers) {
-        if (yBuilding - xOurSoldiers <= 0) {
+        if (yBuilding - xOurSoldiers <= 0) { // мы разрушим казарму еще до начала генерации солдат протвника
             return 1;
         }
         // prepare;
         int count = 1;
         yBuilding -= xOurSoldiers;
 
+        // в первом ходу мы разрушили часть казармы, и теперь каждый ход вынуждены
+        // просто убивать солдат противника, или те убьют/ наших
+        if (xOurSoldiers == yBuilding && xOurSoldiers == pEnemySoldiers) {
+            return -1;
+        }
+
+        // если мы не успеем разрушить казарму за два хода, то противников станет больше
+        // наших
         if (yBuilding * 1.5 > xOurSoldiers && pEnemySoldiers > xOurSoldiers) {
             return -1;
         }
 
-        // common
-        while (((yBuilding + pEnemySoldiers) / (double) xOurSoldiers) > (1 + Math.sqrt(5)) / 2) { // можно ли удалить
-                                                                                                  // лишние скобки
+        // общая
+        while ((yBuilding + pEnemySoldiers) / (double) xOurSoldiers > (1 + Math.sqrt(5)) / 2) {
             int delta = xOurSoldiers - pEnemySoldiers;
             yBuilding -= delta;
             count++;
         }
 
-        // kill building
+        // снос казармы
+
         count++;
         pEnemySoldiers -= (xOurSoldiers - yBuilding);
         if (pEnemySoldiers <= 0) {
             return count;
         }
         xOurSoldiers -= pEnemySoldiers;
+
         while (pEnemySoldiers > 0) {
             count++;
             pEnemySoldiers -= xOurSoldiers;
