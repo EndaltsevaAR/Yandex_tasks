@@ -32,4 +32,24 @@ public class MainTest {
         assertEquals(4, Main.getNumberSteps(250, 500, 187));
     }
 
+    @Test
+    void Test6() {
+        assertEquals(-1, Main.getNumberSteps(300, 301, 485));
+    }
+
+    @Test
+    void Test7() {
+        assertEquals(6, Main.getNumberSteps(300, 301, 484));
+    }
+
+    @Test
+    void Test8() {
+        assertEquals(8, Main.getNumberSteps(250, 500, 230));
+    }
+
+    @Test
+    void Test9() {
+        assertEquals(4, Main.getNumberSteps(5, 8, 4));
+    }
+
 }

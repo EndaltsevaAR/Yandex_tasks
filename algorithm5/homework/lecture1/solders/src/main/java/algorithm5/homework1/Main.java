@@ -40,23 +40,20 @@ public class Main {
         }
 
         // снос казармы
-
-        count++;
-        pEnemySoldiers -= (xOurSoldiers - yBuilding);
-        if (pEnemySoldiers <= 0) {
-            return count;
-        }
-        xOurSoldiers -= pEnemySoldiers;
-
+        int delta = yBuilding;
         while (pEnemySoldiers > 0) {
             count++;
-            pEnemySoldiers -= xOurSoldiers;
+            pEnemySoldiers -= (xOurSoldiers - delta);
             if (pEnemySoldiers <= 0) {
                 return count;
             }
             xOurSoldiers -= pEnemySoldiers;
+            if (xOurSoldiers <= 0) { // на всякий случай можно рассмотреть поражение, если я забыла какое-то краевое
+                                     // в начале, здесь должно его вырулить
+                return -1;
+            }
+            delta = 0;
         }
-
         return count;
     }
 }
