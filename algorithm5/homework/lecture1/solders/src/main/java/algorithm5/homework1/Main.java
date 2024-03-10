@@ -13,10 +13,11 @@ public class Main {
     }
 
     public static int getNumberSteps(int xOurSoldiers, int yBuilding, int pEnemySoldiers) {
+        int enemyGeneration = pEnemySoldiers;
         if (yBuilding - xOurSoldiers <= 0) { // мы разрушим казарму еще до начала генерации солдат протвника
             return 1;
         }
-        // prepare;
+        // prepare
         int count = 1;
         yBuilding -= xOurSoldiers;
 
@@ -32,11 +33,27 @@ public class Main {
             return -1;
         }
 
+        if (xOurSoldiers == yBuilding + pEnemySoldiers) {
+            return 2;
+        }
+
         // общая
-        while ((yBuilding + pEnemySoldiers) / (double) xOurSoldiers > (1 + Math.sqrt(5)) / 2) {
-            int delta = xOurSoldiers - pEnemySoldiers;
-            yBuilding -= delta;
+        double number = (1 + Math.sqrt(5)) / 2;
+        double roundedNumber = Math.round(number * 100000.0) / 100000.0;
+        // while ((yBuilding + pEnemySoldiers) / (double) xOurSoldiers >= (1 +
+        // Math.sqrt(5)) / 2) {
+        // while ((yBuilding + pEnemySoldiers) / (double) xOurSoldiers > 1.615) {
+        while ((yBuilding + pEnemySoldiers) / (double) xOurSoldiers > number) {
             count++;
+            int deltaEnemy = (xOurSoldiers - pEnemySoldiers);
+            if (deltaEnemy > 0) {
+                yBuilding -= deltaEnemy;
+                pEnemySoldiers = 0;
+            } else {
+                pEnemySoldiers -= xOurSoldiers;
+                xOurSoldiers -= Math.abs(deltaEnemy);
+            }
+            pEnemySoldiers += enemyGeneration;
         }
 
         // снос казармы
