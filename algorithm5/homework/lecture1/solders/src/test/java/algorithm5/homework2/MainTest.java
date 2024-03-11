@@ -99,7 +99,7 @@ public class MainTest {
     // assertEquals(4, Main.getNumberSteps());
     // }
 
-    @Test // не работает при сечении, но при цифре да
+    @Test
     void Test10() {
         Main.xOurSoldiers = 250;
         Main.yBuilding = 500;
@@ -129,7 +129,7 @@ public class MainTest {
         assertEquals(3, Main.getNumberSteps());
     }
 
-    @Test // не работает даже на сечении
+    @Test
     void Test13() {
         Main.xOurSoldiers = 2500;
         Main.yBuilding = 5000;
@@ -139,7 +139,7 @@ public class MainTest {
         assertEquals(961, Main.getNumberSteps());
     }
 
-    @Test // работает при сечении
+    @Test
     void Test13a() {
         Main.xOurSoldiers = 78;
         Main.yBuilding = 4934;
@@ -149,8 +149,8 @@ public class MainTest {
         assertEquals(4812, Main.getNumberSteps());
     }
 
-    @Test // работает при сечении
-    void Test14() { // работает при сечениии при цифре
+    @Test
+    void Test14() {
         Main.xOurSoldiers = 78;
         Main.yBuilding = 126;
         Main.pEnemySoldiers = 77;
@@ -160,7 +160,7 @@ public class MainTest {
     }
 
     @Test
-    void Test15() { // не работает
+    void Test15() {
         Main.xOurSoldiers = 1661;
         Main.yBuilding = 4327;
         Main.pEnemySoldiers = 1107;
@@ -170,7 +170,7 @@ public class MainTest {
     }
 
     @Test
-    void Test16() { // не работает
+    void Test16() {
         Main.xOurSoldiers = 1092;
         Main.yBuilding = 2892;
         Main.pEnemySoldiers = 950;
@@ -179,7 +179,7 @@ public class MainTest {
         assertEquals(11, Main.getNumberSteps());
     }
 
-    @Test // не работает
+    @Test
     void Test17() {
         Main.xOurSoldiers = 31;
         Main.yBuilding = 495;
@@ -189,7 +189,7 @@ public class MainTest {
         assertEquals(30, Main.getNumberSteps());
     }
 
-    @Test // работает
+    @Test
     void Test18() {
         Main.xOurSoldiers = 250;
         Main.yBuilding = 500;
@@ -199,7 +199,7 @@ public class MainTest {
         assertEquals(6, Main.getNumberSteps());
     }
 
-    @Test // не работает
+    @Test
     void Test19() {
         Main.xOurSoldiers = 3000;
         Main.yBuilding = 5000;
@@ -209,7 +209,7 @@ public class MainTest {
         assertEquals(79, Main.getNumberSteps());
     }
 
-    @Test // не работает
+    @Test
     void Test20() {
         Main.xOurSoldiers = 2500;
         Main.yBuilding = 5000;
@@ -219,7 +219,7 @@ public class MainTest {
         assertEquals(16, Main.getNumberSteps());
     }
 
-    @Test // не работает
+    @Test
     void Test46() {
         Main.xOurSoldiers = 1;
         Main.yBuilding = 500;
@@ -227,6 +227,26 @@ public class MainTest {
         Main.generatedEnemies = 1;
         Main.reservedCount = 0;
         assertEquals(-1, Main.getNumberSteps());
+    }
+
+    @Test
+    void Test148() {
+        Main.xOurSoldiers = 3000;
+        Main.yBuilding = 5000;
+        Main.pEnemySoldiers = 3000;
+        Main.generatedEnemies = 3000;
+        Main.reservedCount = 0;
+        assertEquals(-1, Main.getNumberSteps());
+    }
+
+    @Test
+    void Test50() {
+        Main.xOurSoldiers = 499;
+        Main.yBuilding = 500;
+        Main.pEnemySoldiers = 499;
+        Main.generatedEnemies = 499;
+        Main.reservedCount = 0;
+        assertEquals(3, Main.getNumberSteps());
     }
 
 }

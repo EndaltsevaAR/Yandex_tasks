@@ -123,8 +123,13 @@ public class Main {
 
         // в первом ходу мы разрушили часть казармы, и теперь каждый ход вынуждены
         // просто убивать солдат противника, или те убьют/ наших
-        if (xOurSoldiers <= yBuilding && xOurSoldiers == pEnemySoldiers) {
-            return -1;
+        if (xOurSoldiers == pEnemySoldiers) {
+            int weCanDestroy = weCanDestroyBuildingAndSoldersNextStep(1);
+            if (weCanDestroy != -1) {
+                return weCanDestroy + 1;
+            } else {
+                return -1;
+            }
         }
 
         // если мы не успеем разрушить казарму за два хода, то противников станет больше
