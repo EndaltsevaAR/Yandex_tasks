@@ -219,4 +219,14 @@ public class MainTest {
         assertEquals(16, Main.getNumberSteps());
     }
 
+    @Test // не работает
+    void Test46() {
+        Main.xOurSoldiers = 1;
+        Main.yBuilding = 500;
+        Main.pEnemySoldiers = 1;
+        Main.generatedEnemies = 1;
+        Main.reservedCount = 0;
+        assertEquals(-1, Main.getNumberSteps());
+    }
+
 }
