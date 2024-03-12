@@ -35,11 +35,6 @@ public class Main {
             } else if (pEnemySoldiers == 0) {
                 killBuilding();
             } else {
-                // if (pEnemySoldiers - xOurSoldiers > 0 && generatedEnemies - xOurSoldiers > 0
-                // && yBuilding > xOurSoldiers) {
-                // return -1;
-                // }
-
                 if (yBuilding > xOurSoldiers) {
                     int delta = xOurSoldiers - pEnemySoldiers;
                     if (delta >= 0) {
@@ -60,8 +55,6 @@ public class Main {
                             reservedCount = weCanDestroyBuild;
                         }
                     }
-                    // if (pEnemySoldiers - xOurSoldiers <= 0 && generatedEnemies - xOurSoldiers >
-                    // 0) {
                     int delta = xOurSoldiers - pEnemySoldiers;
                     if (delta >= 0) {
                         pEnemySoldiers = 0;
@@ -71,7 +64,6 @@ public class Main {
                         xOurSoldiers -= pEnemySoldiers;
                     }
                     pEnemySoldiers += generatedEnemies;
-
                 }
             }
         }
@@ -122,7 +114,8 @@ public class Main {
         yBuilding -= xOurSoldiers;
 
         // в первом ходу мы разрушили часть казармы, и теперь каждый ход вынуждены
-        // просто убивать солдат противника, или те убьют/ наших
+        // просто убивать солдат противника, или те убьют/ наших, но есть шанс если
+        // казарм осталось слишком мало, и мы сможем побить достаточно противников
         if (xOurSoldiers == pEnemySoldiers) {
             int weCanDestroy = weCanDestroyBuildingAndSoldersNextStep(1);
             if (weCanDestroy != -1) {
