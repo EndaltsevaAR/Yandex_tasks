@@ -65,8 +65,8 @@ public class Main {
 
             // check lines
             if (!isHorizontFind && !isVerticalFind) {
-                coordinates.add(nextCoordinates); // мы кладем в список только если не высчитали одну
-                                                  // из координат
+                coordinates.add(nextCoordinates);
+
                 if (coordinates.size() > 2) {
                     Set<Integer> ys = new HashSet<>();
                     ys.add(coordinates.get(0)[0]);
@@ -81,8 +81,9 @@ public class Main {
                     }
 
                     // попытка нахождения столбца
-                    for (int i = 1; i < coordinates.size() && !isVerticalFind; i++) {
-                        Set<Integer> xs = new HashSet<>();
+                    Set<Integer> xs = new HashSet<>();
+                    for (int i = 0; i < coordinates.size() && !isVerticalFind; i++) {
+
                         if (isHorizontFind) {
                             if (coordinates.get(i)[0] != line) {
                                 column = coordinates.get(i)[1];

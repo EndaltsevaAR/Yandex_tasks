@@ -47,4 +47,23 @@ public class MainTest {
         // 1 7 3 999999998 6
     }
 
+    @Test
+    void contextTest13() {
+        String[] persons = new String[6];
+        persons[0] = "5 6 4 9";
+        persons[1] = "3 2 7 5";
+        persons[2] = "3 7 5 2";
+        persons[3] = "8 5 9 5";
+        persons[4] = "7 5 3 1";
+        persons[5] = "4 3 7 6";
+        assertTrue("4 4".equals(Main.getMaxPerson(persons, 4)));
+    }
+    // 6 4
+    // 5 6 4 9
+    // 3 2 7 5
+    // 3 7 5 2
+    // 8 5 9 5
+    // 7 5 3 1
+    // 4 3 7 6
+
 }
