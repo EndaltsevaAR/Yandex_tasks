@@ -1,6 +1,5 @@
 package algorithm5.homework2;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
@@ -41,6 +40,11 @@ public class MainTest {
         persons[2] = "3 9 999999999 5 10";
         persons[3] = "1 7 3 999999998 6";
         assertTrue("4 3".equals(Main.getMaxPerson(persons, 5)));
+        // 4 5
+        // 999999997 1 2 3 4
+        // 10 2 1000000000 1 7
+        // 3 9 999999999 5 10
+        // 1 7 3 999999998 6
     }
 
 }

@@ -3,14 +3,12 @@ package algorithm5.homework2;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
 import java.io.FileNotFoundException;
 
 public class Main {
@@ -44,79 +42,90 @@ public class Main {
             }
         };
 
-        TreeMap<String, Long> sortedPersons = new TreeMap<>(comparator);
+        TreeMap<String, Long> sortedPersons = new TreeMap<>(comparator.reversed());
         sortedPersons.putAll(persons);
 
-        boolean isFind = false;
+        return findCrossMaxPowers(sortedPersons);
+
+    }
+
+    private static String findCrossMaxPowers(TreeMap<String, Long> sortedPersons) {
+        boolean isHorizontFind = false;
+        boolean isVerticalFind = false;
         Map.Entry<String, Long> currentEntry = sortedPersons.firstEntry();
         Map.Entry<String, Long> nextEntry = sortedPersons.higherEntry(currentEntry.getKey());
-        String answer = currentEntry + "/" + nextEntry;
-        while (!isFind) {
-            if (isCross(answer)) {
-                return answer;
+
+        List<int[]> coordinates = new ArrayList<>();
+        coordinates.add(getCoordinates(currentEntry.getKey()));
+        int[] nextCoordinates;
+
+        int line = 0;
+        int column = 0;
+
+        while (!isHorizontFind || !isVerticalFind) {
+            nextCoordinates = getCoordinates(nextEntry.getKey());
+
+            if (!isHorizontFind && !isVerticalFind) {
+                coordinates.add(nextCoordinates); // мы кладем в список только если не высчитали одну
+                                                  // из координат
+                if (coordinates.size() > 2) {
+                    // попытка нахождения строки
+                    for (int i = 1; i < coordinates.size() && !isHorizontFind; i++) {
+                        if (coordinates.get(i)[0] == coordinates.get(0)[0]) {
+                            line = coordinates.get(i)[0];
+                            isHorizontFind = true;
+                        }
+                    }
+
+                    // попытка нахождения столбца
+                    for (int i = 1; i < coordinates.size() && !isVerticalFind; i++) {
+                        if (isHorizontFind) {
+                            if (coordinates.get(i)[0] != line) {
+                                column = coordinates.get(i)[1];
+                                isVerticalFind = true;
+                            }
+                        } else {
+                            if (coordinates.get(i)[1] == coordinates.get(0)[1]) {
+                                column = coordinates.get(i)[1];
+                                isVerticalFind = true;
+                                for (int j = 0; j < coordinates.size() && !isHorizontFind; j++) {
+                                    if (coordinates.get(j)[1] != column) {
+                                        line = coordinates.get(j)[0];
+                                        isHorizontFind = true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                }
+            } else if (isHorizontFind) {
+                if (nextCoordinates[1] == line) {
+                    coordinates.add(nextCoordinates);
+                } else {
+                    column = nextCoordinates[1];
+                    isVerticalFind = true;
+                }
             } else {
-                currentEntry = nextEntry;
-                nextEntry = sortedPersons.higherEntry(currentEntry.getKey());
-                answer += nextEntry.getKey();
+                if (nextCoordinates[0] == column) {
+                    coordinates.add(nextCoordinates);
+                } else {
+                    line = nextCoordinates[0];
+                    isHorizontFind = true;
+                }
             }
+            currentEntry = nextEntry;
+            nextEntry = sortedPersons.higherEntry(currentEntry.getKey());
         }
-        return "";
+        return line + " " + column;
     }
 
-    private static boolean isCross(String answer) {
-        boolean isAnswer = false;
-        String[] coordinates = answer.split("/");
-        int y[] = new int[coordinates.length];
-        int x[] = new int[coordinates.length];
-        for (int i = 0; i < coordinates.length; i++) {
-            y[i] = Integer.parseInt(coordinates[i].split(" ")[0]);
-            x[i] = Integer.parseInt(coordinates[i].split(" ")[1]);
+    private static int[] getCoordinates(String key) {
+        int[] coordinates = new int[2];
+        String[] keys = key.split(" ");
+        for (int i = 0; i < keys.length; i++) {
+            coordinates[i] = Integer.parseInt(keys[i]);
         }
-        //
-        Set<Integer> ys = new HashSet<>();
-        Set<Integer> xs = new HashSet<>();
-        for (int i = 1; i < x.length; i++) {
-            // ys.
-        }
-        return false;
+        return coordinates;
     }
-
-    // Map.Entry<String, Long> currentEntry = sortedPersons.firstEntry();
-    // Map.Entry<String, Long> nextEntry =
-    // sortedPersons.higherEntry(currentEntry.getKey());
-    // Map<String, Boolean> maxPositions = new HashMap<>();
-    // List<String> positionAtStep = new ArrayList<>();
-    // positionAtStep.add(currentEntry.getKey());
-    // long currentMax = currentEntry.getValue();
-    // long lowerMax = nextEntry.getValue();
-
-    // while (!isFind) {
-    // while (currentMax == lowerMax && nextEntry != null) {
-    // positionAtStep.add(nextEntry.getKey());
-    // currentEntry = nextEntry;
-    // nextEntry = sortedPersons.higherEntry(currentEntry.getKey());
-    // currentMax = lowerMax;
-    // lowerMax = nextEntry.getValue();
-    // }
-    // processing(maxPositions, positionAtStep);
-    // positionAtStep = new ArrayList<>();
-
-    // }
-
-    // private static void processing(Map<String, Boolean> maxPositions,
-    // List<String> positionAtStep) {
-    // List<String> totalList = new ArrayList<>(maxPositions.keySet());
-    // if (totalList.isEmpty()) {
-    // for (int i = 0; i < positionAtStep.size(); i++) {
-    // maxPositions.put(positionAtStep.get(i), false);
-    // }
-    // int steps = positionAtStep.size() - 1;
-    // while (steps > 0) {
-    // for (int i = 0; i < maxPositions.size(); i++) {
-
-    // }
-    // }
-    // }
-    // }
-
 }
