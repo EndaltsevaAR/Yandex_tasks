@@ -2,13 +2,12 @@ package algorithm5.homework2;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
-import java.util.TreeMap;
 import java.io.FileNotFoundException;
 
 public class Main {
@@ -27,65 +26,70 @@ public class Main {
     }
 
     public static String getMaxPerson(String[] sPersons, int mNumberClasses) {
-        TreeMap<String, Long> persons = new TreeMap<>();
+        List<Person> persons = new ArrayList<>();
         for (int i = 0; i < sPersons.length; i++) {
             String[] line = sPersons[i].split(" ");
             for (int j = 0; j < mNumberClasses; j++) {
-                persons.put((i + 1) + " " + (j + 1), Long.parseLong(line[j]));
+                Person person = new Person(i + 1, j + 1, Long.parseLong(line[j]));
+                persons.add(person);
             }
         }
 
-        Comparator<String> comparator = new Comparator<String>() {
+        Collections.sort(persons, new Comparator<Person>() {
             @Override
-            public int compare(String key1, String key2) {
-                return persons.get(key1).compareTo(persons.get(key2));
+            public int compare(Person p1, Person p2) {
+                return Long.compare(p2.getPower(), p1.getPower());
             }
-        };
+        });
 
-        TreeMap<String, Long> sortedPersons = new TreeMap<>(comparator.reversed());
-        sortedPersons.putAll(persons);
-
-        return findCrossMaxPowers(sortedPersons);
-
+        return findCrossMaxPowers(persons);
     }
 
-    private static String findCrossMaxPowers(TreeMap<String, Long> sortedPersons) {
+    private static String findCrossMaxPowers(List<Person> persons) {
         boolean isHorizontFind = false;
         boolean isVerticalFind = false;
-        Map.Entry<String, Long> currentEntry = sortedPersons.firstEntry();
-        Map.Entry<String, Long> nextEntry = sortedPersons.higherEntry(currentEntry.getKey());
+
+        int personCounter = 1;
+        Person nextPerson = persons.get(personCounter);
 
         List<int[]> coordinates = new ArrayList<>();
-        coordinates.add(getCoordinates(currentEntry.getKey()));
+        coordinates.add(getCoordinates(persons.get(0)));
+
         int[] nextCoordinates;
 
         int line = 0;
         int column = 0;
 
         while (!isHorizontFind || !isVerticalFind) {
-            nextCoordinates = getCoordinates(nextEntry.getKey());
+            nextCoordinates = getCoordinates(nextPerson);
 
+            // check lines
             if (!isHorizontFind && !isVerticalFind) {
                 coordinates.add(nextCoordinates); // мы кладем в список только если не высчитали одну
                                                   // из координат
                 if (coordinates.size() > 2) {
+                    Set<Integer> ys = new HashSet<>();
+                    ys.add(coordinates.get(0)[0]);
                     // попытка нахождения строки
                     for (int i = 1; i < coordinates.size() && !isHorizontFind; i++) {
-                        if (coordinates.get(i)[0] == coordinates.get(0)[0]) {
+                        if (ys.contains(coordinates.get(i)[0])) {
                             line = coordinates.get(i)[0];
                             isHorizontFind = true;
+                        } else {
+                            ys.add(coordinates.get(i)[0]);
                         }
                     }
 
                     // попытка нахождения столбца
                     for (int i = 1; i < coordinates.size() && !isVerticalFind; i++) {
+                        Set<Integer> xs = new HashSet<>();
                         if (isHorizontFind) {
                             if (coordinates.get(i)[0] != line) {
                                 column = coordinates.get(i)[1];
                                 isVerticalFind = true;
                             }
                         } else {
-                            if (coordinates.get(i)[1] == coordinates.get(0)[1]) {
+                            if (xs.contains(coordinates.get(i)[1])) {
                                 column = coordinates.get(i)[1];
                                 isVerticalFind = true;
                                 for (int j = 0; j < coordinates.size() && !isHorizontFind; j++) {
@@ -94,6 +98,8 @@ public class Main {
                                         isHorizontFind = true;
                                     }
                                 }
+                            } else {
+                                xs.add(coordinates.get(i)[1]);
                             }
                         }
                     }
@@ -114,18 +120,40 @@ public class Main {
                     isHorizontFind = true;
                 }
             }
-            currentEntry = nextEntry;
-            nextEntry = sortedPersons.higherEntry(currentEntry.getKey());
+            nextPerson = persons.get(++personCounter);
         }
         return line + " " + column;
     }
 
-    private static int[] getCoordinates(String key) {
+    private static int[] getCoordinates(Person person) {
         int[] coordinates = new int[2];
-        String[] keys = key.split(" ");
-        for (int i = 0; i < keys.length; i++) {
-            coordinates[i] = Integer.parseInt(keys[i]);
-        }
+        coordinates[0] = person.getRaceY();
+        coordinates[1] = person.getClassX();
         return coordinates;
+    }
+
+}
+
+class Person {
+    private int raceY;
+    private int classX;
+    private long power;
+
+    public Person(int raceY, int classX, long power) {
+        this.raceY = raceY;
+        this.classX = classX;
+        this.power = power;
+    }
+
+    public int getRaceY() {
+        return raceY;
+    }
+
+    public int getClassX() {
+        return classX;
+    }
+
+    public long getPower() {
+        return power;
     }
 }
