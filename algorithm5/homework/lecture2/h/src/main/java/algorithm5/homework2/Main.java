@@ -15,6 +15,7 @@ public class Main {
         File file = new File("input.txt");
         Scanner scanner = new Scanner(file);
         String nm = scanner.nextLine();
+
         int nNumberRaces = Integer.parseInt(nm.split(" ")[0]);
         int mNumberClasses = Integer.parseInt(nm.split(" ")[1]);
         String[] sPersons = new String[nNumberRaces];
