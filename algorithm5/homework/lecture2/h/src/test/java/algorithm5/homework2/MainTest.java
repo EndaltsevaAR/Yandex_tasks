@@ -40,11 +40,6 @@ public class MainTest {
         persons[2] = "3 9 999999999 5 10";
         persons[3] = "1 7 3 999999998 6";
         assertTrue("4 3".equals(Main.getMaxPerson(persons, 5)));
-        // 4 5
-        // 999999997 1 2 3 4
-        // 10 2 1000000000 1 7
-        // 3 9 999999999 5 10
-        // 1 7 3 999999998 6
     }
 
     @Test
@@ -58,12 +53,5 @@ public class MainTest {
         persons[5] = "4 3 7 6";
         assertTrue("4 4".equals(Main.getMaxPerson(persons, 4)));
     }
-    // 6 4
-    // 5 6 4 9
-    // 3 2 7 5
-    // 3 7 5 2
-    // 8 5 9 5
-    // 7 5 3 1
-    // 4 3 7 6
 
 }

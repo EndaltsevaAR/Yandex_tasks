@@ -1,13 +1,30 @@
 package algorithm5.homework2;
 
+/**
+Константин и Михаил играют в настольную игру «Ярость Эльфов». В игре есть n рас и m классов персонажей. 
+Каждый персонаж характеризуется своими расой и классом. Для каждой расы и каждого класса существует ровно 
+один персонаж такой расы и такого класса. Сила персонажа i-й расы и j-го класса равна ai j, и обоим игрокам это прекрасно известно.
+
+Сейчас Константин будет выбирать себе персонажа. Перед этим Михаил может запретить одну расу и один класс, чтобы Константин не мог
+ выбирать персонажей, у которых такая раса или такой класс. Конечно же, Михаил старается, чтобы Константину достался как можно более слабый персонаж, 
+ а Константин, напротив, выбирает персонажа посильнее. Какие расу и класс следует запретить Михаилу?
+
+Формат ввода
+Первая строка содержит два целых числа n и m (2 ≤ n,m ≤ 1000) через пробел — количество рас и классов в игре «Ярость Эльфов», соответственно.
+
+В следующих n строках содержится по m целых чисел через пробел. j-е число i-й из этих строк — это ai j (1 ≤ ai j ≤ 10^9).
+
+Формат вывода
+В единственной строке выведите два целых числа через пробел — номер расы и номер класса, которые следует запретить Михаилу. 
+Расы и классы нумеруются с единицы. Если есть несколько возможных ответов, выведите любой из них.
+ */
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
-import java.util.Set;
 import java.io.FileNotFoundException;
 
 public class Main {
@@ -49,91 +66,75 @@ public class Main {
     private static String findCrossMaxPowers(List<Person> persons) {
         boolean isHorizontFind = false;
         boolean isVerticalFind = false;
-
-        int personCounter = 1;
-        Person nextPerson = persons.get(personCounter);
-
-        List<int[]> coordinates = new ArrayList<>();
-        coordinates.add(getCoordinates(persons.get(0)));
-
-        int[] nextCoordinates;
-
         int line = 0;
         int column = 0;
 
-        while (!isHorizontFind || !isVerticalFind) {
-            nextCoordinates = getCoordinates(nextPerson);
+        List<Integer> ys = new ArrayList<>();
+        List<Integer> xs = new ArrayList<>();
+        ys.add(persons.get(0).getRaceY());
+        xs.add(persons.get(0).getClassX());
+        int secondY, secondX;
 
-            // check lines
+        for (int i = 1; i < persons.size() && (!isHorizontFind || !isVerticalFind); i++) {
+            secondY = persons.get(i).getRaceY();
+            secondX = persons.get(i).getClassX();
             if (!isHorizontFind && !isVerticalFind) {
-                coordinates.add(nextCoordinates);
-
-                if (coordinates.size() > 2) {
-                    Set<Integer> ys = new HashSet<>();
-                    ys.add(coordinates.get(0)[0]);
-                    // попытка нахождения строки
-                    for (int i = 1; i < coordinates.size() && !isHorizontFind; i++) {
-                        if (ys.contains(coordinates.get(i)[0])) {
-                            line = coordinates.get(i)[0];
-                            isHorizontFind = true;
-                        } else {
-                            ys.add(coordinates.get(i)[0]);
-                        }
+                if (ys.contains(secondY)) {
+                    column = secondY;
+                    isVerticalFind = true;
+                    int maybeLine = checkHorizontal(column, ys, xs);
+                    if (maybeLine != -1) {
+                        line = maybeLine;
+                        isHorizontFind = true;
                     }
 
-                    // попытка нахождения столбца
-                    Set<Integer> xs = new HashSet<>();
-                    for (int i = 0; i < coordinates.size() && !isVerticalFind; i++) {
-
-                        if (isHorizontFind) {
-                            if (coordinates.get(i)[0] != line) {
-                                column = coordinates.get(i)[1];
-                                isVerticalFind = true;
-                            }
-                        } else {
-                            if (xs.contains(coordinates.get(i)[1])) {
-                                column = coordinates.get(i)[1];
-                                isVerticalFind = true;
-                                for (int j = 0; j < coordinates.size() && !isHorizontFind; j++) {
-                                    if (coordinates.get(j)[1] != column) {
-                                        line = coordinates.get(j)[0];
-                                        isHorizontFind = true;
-                                    }
-                                }
-                            } else {
-                                xs.add(coordinates.get(i)[1]);
-                            }
-                        }
+                } else if (xs.contains(secondX)) {
+                    line = secondX;
+                    isHorizontFind = true;
+                    int maybeColumn = checkVertical(line, ys, xs);
+                    if (maybeColumn != -1) {
+                        column = maybeColumn;
+                        isVerticalFind = true;
                     }
-
+                }
+                if (i == 1) {
+                    ys.add(secondY);
+                    xs.add(secondX);
                 }
             } else if (isHorizontFind) {
-                if (nextCoordinates[1] == line) {
-                    coordinates.add(nextCoordinates);
-                } else {
-                    column = nextCoordinates[1];
+                if (secondX != line) {
+                    column = secondY;
                     isVerticalFind = true;
                 }
-            } else {
-                if (nextCoordinates[0] == column) {
-                    coordinates.add(nextCoordinates);
-                } else {
-                    line = nextCoordinates[0];
+            } else if (isVerticalFind) {
+                if (secondY != column) {
+                    line = secondX;
                     isHorizontFind = true;
                 }
             }
-            nextPerson = persons.get(++personCounter);
         }
-        return line + " " + column;
+        return column + " " + line;
     }
 
-    private static int[] getCoordinates(Person person) {
-        int[] coordinates = new int[2];
-        coordinates[0] = person.getRaceY();
-        coordinates[1] = person.getClassX();
-        return coordinates;
+    private static int checkVertical(int line, List<Integer> ys, List<Integer> xs) {
+        int result = -1;
+        for (int i = 0; i < xs.size(); i++) {
+            if (xs.get(i) != line) {
+                return ys.get(i);
+            }
+        }
+        return result;
     }
 
+    private static int checkHorizontal(int column, List<Integer> ys, List<Integer> xs) {
+        int result = -1;
+        for (int i = 0; i < ys.size(); i++) {
+            if (ys.get(i) != column) {
+                return xs.get(i);
+            }
+        }
+        return result;
+    }
 }
 
 class Person {
