@@ -24,10 +24,10 @@ public class Main {
             return 0;
         }
 
-        Integer countMoves = 0;
+        int countMoves = 0;
         int[][] field = initField(numberShips, ships);
         // movingShipsToOneAtALine(field, countMoves);
-        movingShipsToVertical(field, countMoves);
+        countMoves = movingShipsToVertical(field, countMoves);
 
         return countMoves;
     }
@@ -51,7 +51,8 @@ public class Main {
         return field;
     }
 
-    private static void movingShipsToVertical(int[][] field, Integer countMoves) {
+    private static int movingShipsToVertical(int[][] field, int countMoves) {
+        int countVertical = countMoves;
         int[] cols = new int[field.length - 2];
 
         for (int y = 1; y < field.length - 1; y++) {
@@ -73,7 +74,8 @@ public class Main {
         }
 
         for (int col : cols) {
-            countMoves += Math.abs(col - median);
+            countVertical += Math.abs(col - median);
         }
+        return countVertical;
     }
 }
