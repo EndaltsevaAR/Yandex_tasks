@@ -12,7 +12,6 @@ public class MainTest {
         ships[0] = "1 2";
         ships[1] = "3 3";
         ships[2] = "1 1";
-        Main.fields = new int[n + 2][n + 2];
         assertEquals(2, Main.getMinMoves(ships));
     }
 }

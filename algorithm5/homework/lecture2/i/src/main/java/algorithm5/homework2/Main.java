@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 public class Main {
-    public static int[][] fields;
 
     public static void main(String[] args) throws FileNotFoundException {
 
@@ -14,7 +13,6 @@ public class Main {
         Scanner scanner = new Scanner(file);
         int numberShips = Integer.parseInt(scanner.nextLine());
         String[] ships = new String[numberShips];
-        fields = new int[numberShips + 2][numberShips + 2];
         for (int i = 0; i < ships.length; i++) {
             ships[i] = scanner.nextLine();
         }
@@ -24,21 +22,21 @@ public class Main {
 
     public static int getMinMoves(String[] ships) {
         int countMoves = 0;
-        initField(ships);
+        int[][] fields = initField(ships);
 
-        if (isAllColumnHasAllElement()) {
+        if (isAllColumnHasAllElement(fields)) {
             return 0;
         }
 
         // Чтобы выйти к медиане, нам надо выйти к состоянию, когда в каждой строчке
         // было по 1 кораблю
-        countMoves += movingShipsToOneAtALine();
-        countMoves += movingShipsToVertical();
+        countMoves += movingShips(fields);
 
         return countMoves;
     }
 
-    private static void initField(String[] ships) {
+    private static int[][] initField(String[] ships) {
+        int[][] fields = new int[ships.length + 2][ships[0].length() + 2];
         // границы в -1
         for (int i = 0; i < fields.length; i++) {
             fields[0][i] = -1;
@@ -51,19 +49,20 @@ public class Main {
             String[] coordinates = ship.split(" ");
             fields[Integer.parseInt(coordinates[0])][Integer.parseInt(coordinates[1])] = 1;
         }
+        return fields;
     }
 
-    private static boolean isAllColumnHasAllElement() {
+    private static boolean isAllColumnHasAllElement(int[][] fields) {
         boolean isAllColumnHasAllElement = false;
         for (int i = 1; i < fields[0].length - 1; i++) {
-            if (getColumnSum(i) == fields.length) {
+            if (getColumnSum(i, fields) == fields.length) {
                 return true;
             }
         }
         return isAllColumnHasAllElement;
     }
 
-    private static int getColumnSum(int columnNumber) {
+    private static int getColumnSum(int columnNumber, int[][] fields) {
         int sum = 0;
         for (int i = 1; i < fields.length - 1; i++) {
             sum += fields[i][columnNumber];
@@ -71,9 +70,10 @@ public class Main {
         return sum;
     }
 
-    private static int movingShipsToOneAtALine() {
+    private static int movingShips(int[][] fields) {
+        // сначала создаем ситуацию, когда в одной строке по 1 кораблю
         int countSteps = 0;
-        while (isAllLineHasOneElement()) {
+        while (isAllLineHasOneElement(fields)) {
             int emptyLinesNumber = 0;
             for (int i = 1; i < fields.length - 1; i++) {
                 int sumLine = Arrays.stream(fields[i]).sum() + 2;
@@ -105,23 +105,8 @@ public class Main {
             }
         }
 
-        return countSteps;
-    }
-
-    private static boolean isAllLineHasOneElement() {
-        boolean isAllLineHasOneElement = true;
-        for (int i = 1; i < fields.length - 1; i++) {
-            if (Arrays.stream(fields[i]).sum() != -1) {
-                return false;
-            }
-        }
-        return isAllLineHasOneElement;
-    }
-
-    private static int movingShipsToVertical() {
-        int countVertical = 0;
+        // сам расчет из медианы
         int[] cols = new int[fields.length - 2];
-
         for (int y = 1; y < fields.length - 1; y++) {
             boolean isLine = false;
             for (int x = 1; x < fields[0].length - 1 && !isLine; x++) {
@@ -141,8 +126,20 @@ public class Main {
         }
 
         for (int col : cols) {
-            countVertical += Math.abs(col - median);
+            countSteps += Math.abs(col - median);
         }
-        return countVertical;
+
+        return countSteps;
     }
+
+    private static boolean isAllLineHasOneElement(int[][] fields) {
+        boolean isAllLineHasOneElement = true;
+        for (int i = 1; i < fields.length - 1; i++) {
+            if (Arrays.stream(fields[i]).sum() != -1) {
+                return false;
+            }
+        }
+        return isAllLineHasOneElement;
+    }
+
 }
