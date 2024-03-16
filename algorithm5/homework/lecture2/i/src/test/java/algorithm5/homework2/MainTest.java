@@ -27,4 +27,20 @@ public class MainTest {
         assertEquals(6, Main.getMinMoves(ships));
     }
 
+    @Test
+    void contextTest13() {
+        int n = 10;
+        String[] ships = new String[n];
+        ships[0] = "9 4";
+        ships[1] = "8 9";
+        ships[2] = "5 4";
+        ships[3] = "10 8";
+        ships[4] = "7 9";
+        ships[5] = "10 5";
+        ships[6] = "9 2";
+        ships[7] = "8 10";
+        ships[8] = "3 9";
+        ships[9] = "6 2";
+        assertEquals(48, Main.getMinMoves(ships));
+    }
 }

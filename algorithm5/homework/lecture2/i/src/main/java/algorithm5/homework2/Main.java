@@ -1,14 +1,29 @@
 package algorithm5.homework2;
 
+/**
+Вася играет в настольную игру «Пираты Баренцева моря», которая посвящена морским битвам. Игровое поле представляет собой квадрат из N×N клеток, 
+на котором расположено N кораблей (каждый корабль занимает одну клетку).
+
+Вася решил воспользоваться линейной тактикой, для этого ему необходимо выстроить все N кораблей в одном столбце. 
+За один ход можно передвинуть один корабль в одну из четырёх соседних по стороне клеток. 
+Номер столбца, в котором будут выстроены корабли, не важен. Определите минимальное количество ходов, 
+необходимых для построения кораблей в одном столбце. В начале и процессе игры никакие два корабля не могут находиться в одной клетке.
+
+Формат ввода
+В первой строке входных данных задаётся число N (1≤N≤100).
+В каждой из следующих N строк задаются координаты корабля: сначала номер строки, затем номер столбца (нумерация начинается с единицы).
+
+Формат вывода
+Выведите одно число — минимальное количество ходов, необходимое для построения.
+ */
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.Scanner;
 
 public class Main {
-
     public static void main(String[] args) throws FileNotFoundException {
-
         File file = new File("input.txt");
         Scanner scanner = new Scanner(file);
         int numberShips = Integer.parseInt(scanner.nextLine());
@@ -31,7 +46,6 @@ public class Main {
         // Чтобы выйти к медиане, нам надо выйти к состоянию, когда в каждой строчке
         // было по 1 кораблю
         countMoves += movingShips(fields);
-
         return countMoves;
     }
 
@@ -84,22 +98,32 @@ public class Main {
                 } else {
                     int numberShipsToMove = sumLine - 1;
                     for (int j = 0; j < fields[i].length && numberShipsToMove > 0; j++) {
-                        if (emptyLinesNumber != 0) { // try up
-                            if (fields[i - 1][j] != 1 && fields[i - 1][j] != -1) {
-                                fields[i - 1][j] = 1;
-                                fields[i][j] = 0;
-                                numberShipsToMove--;
-                                emptyLinesNumber--;
-                                countSteps++;
-                            }
-                        } else { // try down
-                            if (fields[i + 1][j] != 1 && fields[i + 1][j] != -1) {
-                                fields[i + 1][j] = 1;
-                                fields[i][j] = 0;
-                                numberShipsToMove--;
-                                countSteps++;
+                        if (fields[i][j] == 1) {
+                            if (emptyLinesNumber != 0) { // try up
+                                if (fields[i - 1][j] != 1 && fields[i - 1][j] != -1) {
+                                    fields[i - 1][j] = 1;
+                                    fields[i][j] = 0;
+                                    numberShipsToMove--;
+                                    emptyLinesNumber--;
+                                    countSteps++;
+                                } else if (numberShipsToMove > emptyLinesNumber) { // try down
+                                    if (fields[i + 1][j] != 1 && fields[i + 1][j] != -1) {
+                                        fields[i + 1][j] = 1;
+                                        fields[i][j] = 0;
+                                        numberShipsToMove--;
+                                        countSteps++;
+                                    }
+                                }
+                            } else {
+                                if (fields[i + 1][j] != 1 && fields[i + 1][j] != -1) {
+                                    fields[i + 1][j] = 1;
+                                    fields[i][j] = 0;
+                                    numberShipsToMove--;
+                                    countSteps++;
+                                }
                             }
                         }
+
                     }
                 }
             }
@@ -141,5 +165,4 @@ public class Main {
         }
         return isAllLineHasOneElement;
     }
-
 }
