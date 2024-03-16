@@ -36,7 +36,7 @@ public class Main {
     }
 
     private static int[][] initField(String[] ships) {
-        int[][] fields = new int[ships.length + 2][ships[0].length() + 2];
+        int[][] fields = new int[ships.length + 2][ships.length + 2];
         // границы в -1
         for (int i = 0; i < fields.length; i++) {
             fields[0][i] = -1;
@@ -73,7 +73,7 @@ public class Main {
     private static int movingShips(int[][] fields) {
         // сначала создаем ситуацию, когда в одной строке по 1 кораблю
         int countSteps = 0;
-        while (isAllLineHasOneElement(fields)) {
+        while (!isAllLineHasOneElement(fields)) {
             int emptyLinesNumber = 0;
             for (int i = 1; i < fields.length - 1; i++) {
                 int sumLine = Arrays.stream(fields[i]).sum() + 2;
