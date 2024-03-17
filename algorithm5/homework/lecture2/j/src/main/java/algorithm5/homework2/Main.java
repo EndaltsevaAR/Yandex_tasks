@@ -74,7 +74,7 @@ public class Main {
         int xTotalMax = paint[0].length - 1;
         for (int i = y; i < paint.length - 1 && xTotalMax > xMin; i++) {
             boolean isLineEnd = false;
-            for (int j = x; j < paint[0].length - 1 && x < xTotalMax && !isLineEnd; j++) {
+            for (int j = x; j < paint[0].length - 1 && j < xTotalMax && !isLineEnd; j++) {
                 if (paint[i][j] == '#') {
                     List<Integer> figure = new ArrayList<>();
                     figure.add(yMin); // ymin
