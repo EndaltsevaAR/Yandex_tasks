@@ -14,17 +14,26 @@ public class Main {
         String numbers = scanner.nextLine();
         int rows = Integer.parseInt(numbers.split(" ")[0]);
         int cols = Integer.parseInt(numbers.split(" ")[1]);
-        char[][] paint = initArray(rows, cols, scanner);
-
-        scanner.close();
-        if (rows == 1 && cols == 1 || numberCells(paint) < 2) {
-            System.out.println("NO");
-            return;
+        String[] lines = new String[rows];
+        for (int i = 0; i < lines.length; i++) {
+            lines[i] = scanner.nextLine();
         }
-        System.out.println(decodePaint(paint));
+        System.out.println(decodePaint(rows, cols, lines));
+        scanner.close();
     }
 
-    public static char[][] initArray(int rows, int cols, Scanner scanner) {
+    public static String decodePaint(int rows, int cols, String[] lines) {
+        char[][] paint = initArray(rows, cols, lines);
+
+        if (rows == 1 && cols == 1 || numberCells(paint) < 2) {
+            return "NO";
+        }
+
+        List<List<Integer>> firstRectangle = findPossibleFirstRectangle(paint);
+        return findSecondRectangleAndFullAllField(firstRectangle, paint);
+    }
+
+    public static char[][] initArray(int rows, int cols, String[] lines) {
         char[][] paint = new char[rows + 2][cols + 2];
 
         // границы в -1 строки
@@ -39,17 +48,12 @@ public class Main {
         }
 
         for (int i = 1; i < paint.length - 1; i++) {
-            String[] line = scanner.nextLine().split("");
+            String[] line = lines[i - 1].split("");
             for (int j = 0; j < line.length; j++) {
                 paint[i][j + 1] = line[j].charAt(0);
             }
         }
         return paint;
-    }
-
-    public static String decodePaint(char[][] paint) {
-        List<List<Integer>> firstRectangle = findPossibleFirstRectangle(paint);
-        return findSecondRectangleAndFullAllField(firstRectangle, paint);
     }
 
     private static List<List<Integer>> findPossibleFirstRectangle(char[][] paint) {
@@ -70,7 +74,7 @@ public class Main {
         int xTotalMax = paint[0].length - 1;
         for (int i = y; i < paint.length - 1 && xTotalMax > xMin; i++) {
             boolean isLineEnd = false;
-            for (int j = x; j < paint[0].length - 1 && y < xTotalMax && !isLineEnd; j++) {
+            for (int j = x; j < paint[0].length - 1 && x < xTotalMax && !isLineEnd; j++) {
                 if (paint[i][j] == '#') {
                     List<Integer> figure = new ArrayList<>();
                     figure.add(yMin); // ymin
@@ -80,18 +84,17 @@ public class Main {
                     figures.add(figure);
                 } else {
                     isLineEnd = true;
-                    xTotalMax = j - 1;
+                    xTotalMax = j;
                 }
             }
         }
-
         return figures;
     }
 
-    private static String findSecondRectangleAndFullAllField(List<List<Integer>> firstRectangle, char[][] paint) {
+    private static String findSecondRectangleAndFullAllField(List<List<Integer>> firstFigures, char[][] paint) {
         String answer = "NO";
 
-        for (List<Integer> firstFigure : firstRectangle) {
+        for (List<Integer> firstFigure : firstFigures) {
             char[][] testField = createLettedField(paint, firstFigure, 'a');
             List<List<Integer>> secondFigures = findPossibleFirstRectangle(testField);
             for (List<Integer> secondFigure : secondFigures) {
@@ -101,7 +104,6 @@ public class Main {
                 }
             }
         }
-
         return answer;
     }
 
