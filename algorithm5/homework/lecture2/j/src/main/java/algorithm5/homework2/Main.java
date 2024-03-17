@@ -3,6 +3,7 @@ package algorithm5.homework2;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
@@ -16,7 +17,7 @@ public class Main {
         char[][] paint = initArray(rows, cols, scanner);
 
         scanner.close();
-        if (rows == 1 && cols == 1) {
+        if (rows == 1 && cols == 1 || numberCells(paint) < 2) {
             System.out.println("NO");
             return;
         }
@@ -26,12 +27,15 @@ public class Main {
     public static char[][] initArray(int rows, int cols, Scanner scanner) {
         char[][] paint = new char[rows + 2][cols + 2];
 
-        // границы в -1
-        for (int i = 0; i < paint.length; i++) {
+        // границы в -1 строки
+        for (int i = 0; i < paint[0].length; i++) {
             paint[0][i] = '.';
             paint[paint.length - 1][i] = '.';
+        }
+        // границы в -1 столбцы
+        for (int i = 0; i < paint.length; i++) {
             paint[i][0] = '.';
-            paint[i][paint.length - 1] = '.';
+            paint[i][paint[0].length - 1] = '.';
         }
 
         for (int i = 1; i < paint.length - 1; i++) {
@@ -44,122 +48,97 @@ public class Main {
     }
 
     public static String decodePaint(char[][] paint) {
-        List<List<Integer>> figures = findFigures(paint);
-
-        if (figures.size() == 2) {
-            return printYes(figures, paint);
-        } else if (figures.size() == 1) {
-            return printAnswerFromOneFigure(figures, paint);
-        } else {
-            return "NO";
-        }
+        List<List<Integer>> firstRectangle = findPossibleFirstRectangle(paint);
+        return findSecondRectangleAndFullAllField(firstRectangle, paint);
     }
 
-    private static List<List<Integer>> findFigures(char[][] paint) {
-        List<List<Integer>> figures = new ArrayList<>();
-
-        int yMin = 0;
-        int xMin = 0;
-        int yMax = 0;
-        int xMax = 0;
+    private static List<List<Integer>> findPossibleFirstRectangle(char[][] paint) {
         for (int i = 1; i < paint.length - 1; i++) {
             for (int j = 1; j < paint[i].length - 1; j++) {
                 if (paint[i][j] == '#') {
+                    return findAllPossibleFigures(i, j, paint);
+                }
+            }
+        }
+        return Collections.emptyList();
+    }
+
+    private static List<List<Integer>> findAllPossibleFigures(int y, int x, char[][] paint) {
+        List<List<Integer>> figures = new ArrayList<>();
+        int yMin = y;
+        int xMin = x;
+        int xTotalMax = paint[0].length - 1;
+        for (int i = y; i < paint.length - 1 && xTotalMax > xMin; i++) {
+            boolean isLineEnd = false;
+            for (int j = x; j < paint[0].length - 1 && y < xTotalMax && !isLineEnd; j++) {
+                if (paint[i][j] == '#') {
                     List<Integer> figure = new ArrayList<>();
-                    yMin = i;
-                    figure.add(yMin);
-                    xMin = j; // yMin
-                    figure.add(xMin); // xMin
-                    for (int k = j + 1; k < paint[i].length; k++) { // ищем максимум по х
-                        if (paint[i][k] == '.' || paint[i][k] == 'N') {
-                            xMax = k - 1;
-                        }
-                    }
-                    boolean isYMaxFind = false;
-
-                    // смотрим все строчки вниз до поиска
-                    for (int yInFigure = yMin + 1; yInFigure < paint.length && !isYMaxFind; yInFigure++) {
-                        // максимум по y
-                        for (int xInFigure = xMin; xInFigure <= xMax && !isYMaxFind; xInFigure++) {
-                            if (paint[yInFigure][xInFigure] != '#') {
-                                yMax = yInFigure - 1;
-                                isYMaxFind = true;
-                            }
-                        }
-                    }
-                    figure.add(Math.min(yMax, paint.length - 1));
-                    figure.add(Math.min(xMax, paint[i].length - 1));
-
-                    // перекрашивание найденного прямоугольника
-                    for (int yInFigure = yMin; yInFigure <= yMax; yInFigure++) {
-                        for (int xInFigure = xMin; xInFigure <= xMax; xInFigure++) {
-                            paint[yInFigure][xInFigure] = 'N';
-                        }
-                    }
+                    figure.add(yMin); // ymin
+                    figure.add(xMin); // xmin
+                    figure.add(i); // ymax
+                    figure.add(j); // xmax
                     figures.add(figure);
+                } else {
+                    isLineEnd = true;
+                    xTotalMax = j - 1;
                 }
             }
         }
 
         return figures;
-
     }
 
-    private static String printYes(List<List<Integer>> figures, char[][] paint) {
-        char letter = 'a';
-        for (List<Integer> figure : figures) {
-            for (int i = figure.get(0); i <= figure.get(2); i++) {
-                for (int j = figure.get(1); j <= figure.get(3); j++) {
-                    paint[i][j] = letter;
-                }
-            }
-            letter++;
-        }
-        return printPaint(paint);
-    }
+    private static String findSecondRectangleAndFullAllField(List<List<Integer>> firstRectangle, char[][] paint) {
+        String answer = "NO";
 
-    private static String printAnswerFromOneFigure(List<List<Integer>> figures, char[][] paint) {
-        List<Integer> figure = figures.get(0);
-        if (figure.get(0).equals(figure.get(2)) && figure.get(1).equals(figure.get(3))) {
-            return "NO";
-        }
-        if ((figure.get(2) - figure.get(0)) - (figure.get(3) - figure.get(1)) > 0) { // длина по У больше
-            for (int i = figure.get(0); i <= figure.get(0) + 1; i++) {
-                for (int j = figure.get(1); j <= figure.get(3); j++) {
-                    paint[i][j] = 'a';
-                }
-            }
-
-            for (int i = figure.get(0) + 1; i <= figure.get(2); i++) {
-                for (int j = figure.get(1); j <= figure.get(3); j++) {
-                    paint[i][j] = 'b';
-                }
-            }
-
-        } else { // делим по х
-            for (int i = figure.get(0); i <= figure.get(2); i++) {
-                for (int j = figure.get(1); j <= figure.get(1) + 1; j++) {
-                    paint[i][j] = 'a';
-                }
-            }
-            for (int i = figure.get(0); i <= figure.get(2); i++) {
-                for (int j = figure.get(1) + 1; j <= figure.get(3); j++) {
-                    paint[i][j] = 'b';
+        for (List<Integer> firstFigure : firstRectangle) {
+            char[][] testField = createLettedField(paint, firstFigure, 'a');
+            List<List<Integer>> secondFigures = findPossibleFirstRectangle(testField);
+            for (List<Integer> secondFigure : secondFigures) {
+                char[][] finalField = createLettedField(testField, secondFigure, 'b');
+                if (numberCells(finalField) == 0) {
+                    return printYes(finalField);
                 }
             }
         }
-        return printPaint(paint);
+
+        return answer;
     }
 
-    private static String printPaint(char[][] paint) {
+    private static char[][] createLettedField(char[][] paint, List<Integer> figure, char letter) {
+        char[][] testField = new char[paint.length][];
+        for (int i = 0; i < paint.length; i++) {
+            testField[i] = paint[i].clone();
+        }
+        for (int i = figure.get(0); i <= figure.get(2); i++) {
+            for (int j = figure.get(1); j <= figure.get(3); j++) {
+                testField[i][j] = letter;
+            }
+        }
+        return testField;
+    }
+
+    private static String printYes(char[][] paint) {
         StringBuilder builder = new StringBuilder();
         builder.append("YES").append("\n");
         for (int i = 1; i < paint.length - 1; i++) {
-            for (int j = 1; j < paint.length - 1; j++) {
+            for (int j = 1; j < paint[0].length - 1; j++) {
                 builder.append(paint[i][j]);
             }
             builder.append("\n");
         }
         return builder.deleteCharAt(builder.length() - 1).toString();
+    }
+
+    private static int numberCells(char[][] paint) {
+        int count = 0;
+        for (int i = 1; i < paint.length - 1; i++) {
+            for (int j = 1; j < paint[0].length - 1; j++) {
+                if (paint[i][j] == '#') {
+                    count++;
+                }
+            }
+        }
+        return count;
     }
 }

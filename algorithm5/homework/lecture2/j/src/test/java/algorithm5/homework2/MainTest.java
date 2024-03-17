@@ -7,9 +7,9 @@ import org.junit.jupiter.api.Test;
 public class MainTest {
     @Test
     void contextTest1() {
-        String[][] paint = new String[2][1];
-        paint[0][0] = "#";
-        paint[1][0] = ".";
+        char[][] paint = new char[2][1];
+        paint[0][0] = '#';
+        paint[1][0] = '.';
         assertTrue("NO".equals(Main.decodePaint(paint)));
     }
 
