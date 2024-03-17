@@ -9,6 +9,7 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) throws FileNotFoundException {
+        long start = System.currentTimeMillis();
         File file = new File("input.txt");
         Scanner scanner = new Scanner(file);
         String numbers = scanner.nextLine();
@@ -19,17 +20,24 @@ public class Main {
             lines[i] = scanner.nextLine();
         }
         System.out.println(decodePaint(rows, cols, lines));
+        long endTime = System.currentTimeMillis();
+        System.out.println(endTime - start);
         scanner.close();
     }
 
     public static String decodePaint(int rows, int cols, String[] lines) {
         char[][] paint = initArray(rows, cols, lines);
 
-        if (rows == 1 && cols == 1 || numberCells(paint) < 2) {
-            return "NO";
+        // заглушка для того, чтобы функцию можно было бы использовать еще
+        List<Integer> stup = new ArrayList<>();
+        for (int k = 0; k < 4; k++) {
+            stup.add(-1);
         }
 
-        List<List<Integer>> firstRectangle = findPossibleFirstRectangle(paint);
+        List<List<Integer>> firstRectangle = findPossibleFirstRectangle(paint, stup);
+        if (firstRectangle.isEmpty()) {
+            return "NO";
+        }
         return findSecondRectangleAndFullAllField(firstRectangle, paint);
     }
 
@@ -56,18 +64,24 @@ public class Main {
         return paint;
     }
 
-    private static List<List<Integer>> findPossibleFirstRectangle(char[][] paint) {
+    private static List<List<Integer>> findPossibleFirstRectangle(char[][] paint, List<Integer> figureReserved) {
         for (int i = 1; i < paint.length - 1; i++) {
             for (int j = 1; j < paint[i].length - 1; j++) {
                 if (paint[i][j] == '#') {
-                    return findAllPossibleFigures(i, j, paint);
+                    if (i >= figureReserved.get(0) && i <= figureReserved.get(2) && j >= figureReserved.get(1)
+                            && j <= figureReserved.get(3)) {
+                        continue;
+                    } else {
+                        return findAllPossibleFigures(i, j, paint, figureReserved);
+                    }
                 }
             }
         }
         return Collections.emptyList();
     }
 
-    private static List<List<Integer>> findAllPossibleFigures(int y, int x, char[][] paint) {
+    private static List<List<Integer>> findAllPossibleFigures(int y, int x, char[][] paint,
+            List<Integer> figureReserved) {
         List<List<Integer>> figures = new ArrayList<>();
         int yMin = y;
         int xMin = x;
@@ -75,7 +89,10 @@ public class Main {
         for (int i = y; i < paint.length - 1 && xTotalMax > xMin; i++) {
             boolean isLineEnd = false;
             for (int j = x; j < paint[0].length - 1 && j < xTotalMax && !isLineEnd; j++) {
-                if (paint[i][j] == '#') {
+                if (paint[i][j] == '#'
+                        && (!(i >= figureReserved.get(0) && i <= figureReserved.get(2) && j >= figureReserved.get(1)
+                                && j <= figureReserved.get(3)))) {
+
                     List<Integer> figure = new ArrayList<>();
                     figure.add(yMin); // ymin
                     figure.add(xMin); // xmin
@@ -95,52 +112,59 @@ public class Main {
         String answer = "NO";
 
         for (List<Integer> firstFigure : firstFigures) {
-            char[][] testField = createLettedField(paint, firstFigure, 'a');
-            List<List<Integer>> secondFigures = findPossibleFirstRectangle(testField);
+            List<List<Integer>> secondFigures = findPossibleFirstRectangle(paint, firstFigure);
+            if (secondFigures.isEmpty()) {
+                return "NO";
+            }
             for (List<Integer> secondFigure : secondFigures) {
-                char[][] finalField = createLettedField(testField, secondFigure, 'b');
-                if (numberCells(finalField) == 0) {
-                    return printYes(finalField);
+                if (checkField(paint, firstFigure, secondFigure)) {
+                    return printYes(paint, firstFigure, secondFigure);
                 }
             }
+
         }
         return answer;
     }
 
-    private static char[][] createLettedField(char[][] paint, List<Integer> figure, char letter) {
-        char[][] testField = new char[paint.length][];
-        for (int i = 0; i < paint.length; i++) {
-            testField[i] = paint[i].clone();
-        }
-        for (int i = figure.get(0); i <= figure.get(2); i++) {
-            for (int j = figure.get(1); j <= figure.get(3); j++) {
-                testField[i][j] = letter;
+    private static boolean checkField(char[][] paint, List<Integer> firstFigure, List<Integer> secondFigure) {
+        boolean isOk = true;
+        for (int i = 1; i < paint.length - 1; i++) {
+            for (int j = 1; j < paint[0].length - 1; j++) {
+
+                if (paint[i][j] == '#') {
+                    if (i >= firstFigure.get(0) && i <= firstFigure.get(2) && j >= firstFigure.get(1)
+                            && j <= firstFigure.get(3)) {
+                        continue;
+                    } else if (i >= secondFigure.get(0) && i <= secondFigure.get(2) && j >= secondFigure.get(1)
+                            && j <= secondFigure.get(3)) {
+                        continue;
+                    } else {
+                        return false;
+                    }
+                }
             }
         }
-        return testField;
+        return isOk;
     }
 
-    private static String printYes(char[][] paint) {
+    private static String printYes(char[][] paint, List<Integer> firstFigure, List<Integer> secondFigure) {
         StringBuilder builder = new StringBuilder();
         builder.append("YES").append("\n");
         for (int i = 1; i < paint.length - 1; i++) {
             for (int j = 1; j < paint[0].length - 1; j++) {
-                builder.append(paint[i][j]);
+                if (i >= firstFigure.get(0) && i <= firstFigure.get(2) && j >= firstFigure.get(1)
+                        && j <= firstFigure.get(3)) {
+                    builder.append('a');
+                } else if (i >= secondFigure.get(0) && i <= secondFigure.get(2) && j >= secondFigure.get(1)
+                        && j <= secondFigure.get(3)) {
+                    builder.append('b');
+                } else {
+                    builder.append(paint[i][j]);
+                }
             }
             builder.append("\n");
         }
         return builder.deleteCharAt(builder.length() - 1).toString();
     }
 
-    private static int numberCells(char[][] paint) {
-        int count = 0;
-        for (int i = 1; i < paint.length - 1; i++) {
-            for (int j = 1; j < paint[0].length - 1; j++) {
-                if (paint[i][j] == '#') {
-                    count++;
-                }
-            }
-        }
-        return count;
-    }
 }
