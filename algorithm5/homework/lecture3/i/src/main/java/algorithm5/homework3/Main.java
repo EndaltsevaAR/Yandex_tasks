@@ -304,15 +304,32 @@ public class Main {
         for (int i = 0; i < teamGames.size(); i++) {
             gameNumbers[i] = teamGames.get(i)[0];
         }
-        int count = getCount(gameNumbers, goalsScoredInAMatchByPlayerMap, commandScopes);
+        int count = getCount(gameNumbers, goalsScoredInAMatchByPlayerMap, commandStructure, teamName);
         return builder;
     }
 
     private static int getCount(int[] gameNumbers, Map<String, List<int[]>> goalsScoredInAMatchByPlayerMap,
-            Map<String, List<int[]>> commandScopes) {
-        int count = 0;
+            Map<String, String> commandStructure, String teamName) {
+        int countTeamOpenScore = 0;
 
-        return count;
+        for (int i = 0; i < gameNumbers.length; i++) {
+            int minuteMin = 92;
+            String teamMinuteMin = "";
+            for (Map.Entry<String, List<int[]>> playerGames : goalsScoredInAMatchByPlayerMap.entrySet()) {
+                List<int[]> games = playerGames.getValue();
+                for (int[] game : games) {
+                    if (game[0] == i && game[1] < minuteMin) {
+                        minuteMin = game[1];
+                        teamMinuteMin = commandStructure.get(playerGames.getKey());
+                    }
+                }
+            }
+            if (teamMinuteMin.equals(teamName)) {
+                countTeamOpenScore++;
+            }
+        }
+
+        return countTeamOpenScore;
     }
 
     private static StringBuilder requestScoreOpenPlayer(String requestLine) {
