@@ -2,6 +2,7 @@ package algorithm5.homework3;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -51,7 +52,7 @@ public class Main {
         Pattern pattern = Pattern.compile("\"(.*?)\" - \"(.*?)\" (\\d+):(\\d+)");
         for (int i = 0; i < inputInfo.size();) {
             Matcher matcher = pattern.matcher(inputInfo.get(i));
-            while (matcher.find()) {
+            if (matcher.find()) {
                 firstTeam = matcher.group(1);
                 secondTeam = matcher.group(2);
                 firstCommandScore = Integer.parseInt(matcher.group(3));
@@ -110,6 +111,18 @@ public class Main {
                 }
                 i += firstCommandScore + secondCommandScore;
 
+                // формирование списка запросов
+                while (i < inputInfo.size() && isRequest(inputInfo.get(i), requestTypes)) {
+                    requests.add(inputInfo.get(i));
+                    i++;
+                }
+
+                for (int j = 0; j < requests.size(); j++) {
+                    resultingAnswerBuilder.append(requestProcessing(requests.get(j), numberGame, commandScopes,
+                            commandStructure, goalsScoredInAMatchByPlayerMap)).append("\n");
+                }
+                requests = new ArrayList<>(); // обнуляем список запросов, потому что предыдущий уже обработан
+            } else {
                 // формирование списка запросов
                 while (i < inputInfo.size() && isRequest(inputInfo.get(i), requestTypes)) {
                     requests.add(inputInfo.get(i));
@@ -185,7 +198,7 @@ public class Main {
         if (matcher.find()) {
             String teamName = matcher.group(1);
             List<int[]> scopes = commandScopes.get(teamName);
-            double sum = 0;
+            int sum = 0;
             if (scopes == null) {
                 return builder.append(sum);
             }
@@ -212,7 +225,10 @@ public class Main {
             }
             double avr = sum / scopes.size(); // можно не проверять, так как в задаче гарантируется, что хотя бы одну
                                               // игру команда сыграла
-            return builder.append(String.format("%.3f", avr));
+            DecimalFormat decimalFormat = new DecimalFormat("#.##");
+            decimalFormat.setMinimumFractionDigits(1);
+            decimalFormat.setMaximumFractionDigits(3);
+            return builder.append(decimalFormat.format(avr));
         }
         return builder;
     }
@@ -253,7 +269,10 @@ public class Main {
             double avr = (double) playerGames.size() / commandGames.size(); // можно не проверять, так как в задаче
                                                                             // гарантируется, что хотя бы одну игру
                                                                             // команда сыграла
-            return builder.append(String.format("%.3f", avr));
+            DecimalFormat decimalFormat = new DecimalFormat("#.##");
+            decimalFormat.setMinimumFractionDigits(1);
+            decimalFormat.setMaximumFractionDigits(3);
+            return builder.append(decimalFormat.format(avr));
         }
         return builder;
     }
@@ -376,7 +395,7 @@ public class Main {
                     return 0;
                 }
                 for (int[] game : games) {
-                    if (game[0] == i && game[1] < minuteMin) {
+                    if (game[0] == gameNumbers[i] && game[1] < minuteMin) {
                         minuteMin = game[1];
                         teamMinuteMin = commandStructure.get(playerGames.getKey());
                     }
@@ -424,7 +443,7 @@ public class Main {
                     return 0;
                 }
                 for (int[] game : games) {
-                    if (game[0] == i && game[1] < minuteMin) {
+                    if (game[0] == gameNumbers[i] && game[1] < minuteMin) {
                         minuteMin = game[1];
                         playerMinuteMin = playerGames.getKey();
                     }
