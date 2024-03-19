@@ -21,6 +21,7 @@ public class Main {
             inputInfo.add(scanner.nextLine());
         }
         System.out.println(getStatistics(inputInfo));
+        scanner.close();
     }
 
     public static String getStatistics(List<String> inputInfo) {
@@ -32,8 +33,8 @@ public class Main {
         // ключ - игрок, значение - название команды
         Map<String, String> commandStructure = new HashMap<>();
 
-        // ключ - команда, значение - список голов
-        Map<String, List<Integer>> commandScopes = new HashMap<>();
+        // ключ - команда, значение - список голов (массив из матча и количества голов)
+        Map<String, List<int[]>> commandScopes = new HashMap<>();
         // в ключе футболист, в значениях лист голов (массив из матча и времени)
         Map<String, List<int[]>> goalsScoredInAMatchByPlayerMap = new HashMap<>();
 
@@ -59,23 +60,29 @@ public class Main {
                 numberGame++;
                 i++;
 
-                List<Integer> firstCommandScopes = null;
+                List<int[]> firstCommandScopes = null;
                 if (commandScopes.containsKey(firstTeam)) {
                     firstCommandScopes = commandScopes.get(firstTeam);
                 } else {
                     firstCommandScopes = new ArrayList<>();
                 }
-                firstCommandScopes.add(firstCommandScore);
+                int[] firstArr = new int[2];
+                firstArr[0] = numberGame;
+                firstArr[1] = firstCommandScore;
+                firstCommandScopes.add(firstArr);
                 commandScopes.put(firstTeam, firstCommandScopes);
 
-                List<Integer> secondCommandScopes = null;
+                List<int[]> secondCommandScopes = null;
                 if (commandScopes.containsKey(secondTeam)) {
                     secondCommandScopes = commandScopes.get(secondTeam);
                 } else {
                     secondCommandScopes = new ArrayList<>();
                 }
-                secondCommandScopes.add(secondCommandScore);
-                commandScopes.put(firstTeam, secondCommandScopes);
+                int[] secondArr = new int[2];
+                secondArr[0] = numberGame;
+                secondArr[1] = secondCommandScore;
+                firstCommandScopes.add(secondArr);
+                commandScopes.put(secondTeam, secondCommandScopes);
 
                 for (int j = i; j < firstCommandScore + secondCommandScore; j++) {
                     Matcher matcherInner = patternInner.matcher(inputInfo.get(j));
@@ -146,7 +153,7 @@ public class Main {
     }
 
     private static StringBuilder requestProcessing(String requestLine, int numberGame,
-            Map<String, List<Integer>> commandScopes, Map<String, String> commandStructure,
+            Map<String, List<int[]>> commandScopes, Map<String, String> commandStructure,
             Map<String, List<int[]>> goalsScoredInAMatchByPlayerMap) {
 
         if (requestLine.startsWith("Total goals for ")) {
@@ -154,77 +161,165 @@ public class Main {
         } else if (requestLine.startsWith("Mean goals per game for ")) {
             return requestAvrGoalCommand(requestLine, commandScopes);
         } else if (requestLine.startsWith("Total goals by ")) {
-            return requestTotalGoalPlayer();
+            return requestTotalGoalPlayer(requestLine, goalsScoredInAMatchByPlayerMap);
         } else if (requestLine.startsWith("Mean goals per game by ")) {
-            return requestAvrGoalPlayer();
+            return requestAvrGoalPlayer(requestLine, goalsScoredInAMatchByPlayerMap, commandScopes, commandStructure);
         } else if (requestLine.startsWith("Goals on minute ")) {
-            return requestGoalMinutePlayer();
+            return requestGoalMinutePlayer(requestLine, goalsScoredInAMatchByPlayerMap);
         } else if (requestLine.startsWith("Goals on first ")) {
-            return requestGoalFirstMinutesPlayer();
+            return requestGoalFirstMinutesPlayer(requestLine, goalsScoredInAMatchByPlayerMap);
         } else if (requestLine.startsWith("Goals on last ")) {
-            return requestGoalLastMinutesPlayer();
+            return requestGoalLastMinutesPlayer(requestLine, goalsScoredInAMatchByPlayerMap);
         } else if (requestLine.startsWith("Score opens by ")) {
-            return requestScoreOpen();
+            return requestScoreOpen(requestLine, goalsScoredInAMatchByPlayerMap, commandScopes, commandStructure);
         } else {
             return new StringBuilder();
         }
 
     }
 
-    private static StringBuilder requestTotalGoalCommand(String requestLine, Map<String, List<Integer>> commandScopes) {
+    private static StringBuilder requestTotalGoalCommand(String requestLine, Map<String, List<int[]>> commandScopes) {
         StringBuilder builder = new StringBuilder();
         Pattern pattern = Pattern.compile("Total goals for \"(.*?)\"");
         Matcher matcher = pattern.matcher(requestLine);
         String teamName = matcher.group(1);
-        List<Integer> scopes = commandScopes.get(teamName);
-        int sum = scopes.stream().mapToInt(Integer::intValue).sum();
+        List<int[]> scopes = commandScopes.get(teamName);
+        double sum = 0;
+        for (int[] scope : scopes) {
+            sum += scope[1];
+        }
         return builder.append(sum);
     }
 
-    private static StringBuilder requestAvrGoalCommand(String requestLine, Map<String, List<Integer>> commandScopes) {
+    private static StringBuilder requestAvrGoalCommand(String requestLine, Map<String, List<int[]>> commandScopes) {
         StringBuilder builder = new StringBuilder();
         Pattern pattern = Pattern.compile("Mean goals per game for \"(.*?)\"");
         Matcher matcher = pattern.matcher(requestLine);
         String teamName = matcher.group(1);
-        List<Integer> scopes = commandScopes.get(teamName);
-        int sum = scopes.stream().mapToInt(Integer::intValue).sum();
-        double avr = (double) sum / scopes.size();
+        List<int[]> scopes = commandScopes.get(teamName);
+        double sum = 0;
+        for (int[] scope : scopes) {
+            sum += scope[1];
+        }
+        double avr = sum / scopes.size();
         return builder.append(String.format("%.3f", avr));
     }
 
-    private static StringBuilder requestTotalGoalPlayer() {
+    private static StringBuilder requestTotalGoalPlayer(String requestLine,
+            Map<String, List<int[]>> goalsScoredInAMatchByPlayerMap) {
         StringBuilder builder = new StringBuilder();
+        Pattern pattern = Pattern.compile("Total goals by (.*)");
+        Matcher matcher = pattern.matcher(requestLine);
+        String playerName = matcher.group(1).trim();
+        List<int[]> playerScores = goalsScoredInAMatchByPlayerMap.get(playerName);
 
+        return builder.append(playerScores.size()); // каждый раз забивает по голу
+    }
+
+    private static StringBuilder requestAvrGoalPlayer(String requestLine,
+            Map<String, List<int[]>> goalsScoredInAMatchByPlayerMap, Map<String, List<int[]>> commandScopes,
+            Map<String, String> commandStructure) {
+        StringBuilder builder = new StringBuilder();
+        Pattern pattern = Pattern.compile("Mean goals per game by (.*)");
+        Matcher matcher = pattern.matcher(requestLine);
+        String playerName = matcher.group(1).trim();
+        String teamName = commandStructure.get(playerName);
+        List<int[]> commandGames = commandScopes.get(teamName);
+        List<int[]> playerGames = goalsScoredInAMatchByPlayerMap.get(playerName);
+        double avr = (double) playerGames.size() / commandGames.size();
+        return builder.append(String.format("%.3f", avr));
+    }
+
+    private static StringBuilder requestGoalMinutePlayer(String requestLine,
+            Map<String, List<int[]>> goalsScoredInAMatchByPlayerMap) {
+        StringBuilder builder = new StringBuilder();
+        Pattern pattern = Pattern.compile("Goals on minute (\\d+) by (.*)");
+        Matcher matcher = pattern.matcher(requestLine);
+        int minute = Integer.parseInt(matcher.group(1));
+        String playerName = matcher.group(2);
+        List<int[]> playerGames = goalsScoredInAMatchByPlayerMap.get(playerName);
+        int countGames = 0;
+        for (int[] game : playerGames) {
+            if (game[1] == minute) {
+                countGames++;
+            }
+        }
+        return builder.append(countGames);
+    }
+
+    private static StringBuilder requestGoalFirstMinutesPlayer(String requestLine,
+            Map<String, List<int[]>> goalsScoredInAMatchByPlayerMap) {
+        StringBuilder builder = new StringBuilder();
+        Pattern pattern = Pattern.compile("Goals on first (\\d+) minutes by (.*)");
+        Matcher matcher = pattern.matcher(requestLine);
+        int minute = Integer.parseInt(matcher.group(1));
+        String playerName = matcher.group(2);
+        List<int[]> playerGames = goalsScoredInAMatchByPlayerMap.get(playerName);
+        int countGames = 0;
+        for (int[] game : playerGames) {
+            if (game[1] <= minute) {
+                countGames++;
+            }
+        }
+        return builder.append(countGames);
+    }
+
+    private static StringBuilder requestGoalLastMinutesPlayer(String requestLine,
+            Map<String, List<int[]>> goalsScoredInAMatchByPlayerMap) {
+        StringBuilder builder = new StringBuilder();
+        Pattern pattern = Pattern.compile("Goals on last (\\d+) minutes by (.*)");
+        Matcher matcher = pattern.matcher(requestLine);
+        int minute = Integer.parseInt(matcher.group(1));
+        String playerName = matcher.group(2);
+        List<int[]> playerGames = goalsScoredInAMatchByPlayerMap.get(playerName);
+        int countGames = 0;
+        for (int[] game : playerGames) {
+            if (game[1] >= 91 - minute) {
+                countGames++;
+            }
+        }
+        return builder.append(countGames);
+    }
+
+    private static StringBuilder requestScoreOpen(String requestLine,
+            Map<String, List<int[]>> goalsScoredInAMatchByPlayerMap, Map<String, List<int[]>> commandScopes,
+            Map<String, String> commandStructure) {
+        if (requestLine.contains("\"")) {
+            return requestScoreOpenCommand(requestLine, goalsScoredInAMatchByPlayerMap, commandScopes,
+                    commandStructure);
+        } else {
+            return requestScoreOpenPlayer(requestLine);
+        }
+    }
+
+    private static StringBuilder requestScoreOpenCommand(String requestLine,
+            Map<String, List<int[]>> goalsScoredInAMatchByPlayerMap, Map<String, List<int[]>> commandScopes,
+            Map<String, String> commandStructure) {
+        StringBuilder builder = new StringBuilder();
+        Pattern pattern = Pattern.compile("Score opens by \"(.*?)\"");
+        Matcher matcher = pattern.matcher(requestLine);
+        String teamName = matcher.group(1);
+        List<int[]> teamGames = commandScopes.get(teamName);
+        int[] gameNumbers = new int[teamGames.size()];
+        for (int i = 0; i < teamGames.size(); i++) {
+            gameNumbers[i] = teamGames.get(i)[0];
+        }
+        int count = getCount(gameNumbers, goalsScoredInAMatchByPlayerMap, commandScopes);
         return builder;
     }
 
-    private static StringBuilder requestAvrGoalPlayer() {
-        StringBuilder builder = new StringBuilder();
+    private static int getCount(int[] gameNumbers, Map<String, List<int[]>> goalsScoredInAMatchByPlayerMap,
+            Map<String, List<int[]>> commandScopes) {
+        int count = 0;
 
-        return builder;
+        return count;
     }
 
-    private static StringBuilder requestGoalMinutePlayer() {
+    private static StringBuilder requestScoreOpenPlayer(String requestLine) {
         StringBuilder builder = new StringBuilder();
-
-        return builder;
-    }
-
-    private static StringBuilder requestGoalFirstMinutesPlayer() {
-        StringBuilder builder = new StringBuilder();
-
-        return builder;
-    }
-
-    private static StringBuilder requestGoalLastMinutesPlayer() {
-        StringBuilder builder = new StringBuilder();
-
-        return builder;
-    }
-
-    private static StringBuilder requestScoreOpen() {
-        StringBuilder builder = new StringBuilder();
-
+        Pattern pattern = Pattern.compile("Score opens by (.*)");
+        Matcher matcher = pattern.matcher(requestLine);
+        String playerName = matcher.group(1).trim();
         return builder;
     }
 }
