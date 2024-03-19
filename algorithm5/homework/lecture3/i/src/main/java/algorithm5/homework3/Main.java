@@ -49,7 +49,6 @@ public class Main {
 
         // цикл обработки входных данных
         Pattern pattern = Pattern.compile("\"(.*?)\" - \"(.*?)\" (\\d+):(\\d+)");
-        Pattern patternInner = Pattern.compile("(\\D+) (\\d+)'");
         for (int i = 0; i < inputInfo.size();) {
             Matcher matcher = pattern.matcher(inputInfo.get(i));
             while (matcher.find()) {
@@ -81,15 +80,16 @@ public class Main {
                 int[] secondArr = new int[2];
                 secondArr[0] = numberGame;
                 secondArr[1] = secondCommandScore;
-                firstCommandScopes.add(secondArr);
+                secondCommandScopes.add(secondArr);
                 commandScopes.put(secondTeam, secondCommandScopes);
 
-                for (int j = i; j < firstCommandScore + secondCommandScore; j++) {
-                    Matcher matcherInner = patternInner.matcher(inputInfo.get(j));
-                    String playerName = matcherInner.group(1);
-                    int minute = Integer.parseInt(matcherInner.group(2));
+                for (int j = i; j < i + firstCommandScore + secondCommandScore; j++) {
+                    int lastIndex = inputInfo.get(j).lastIndexOf(' ');
+                    String playerName = inputInfo.get(j).substring(0, lastIndex);
+                    int minute = Integer
+                            .parseInt(inputInfo.get(j).substring(lastIndex + 1, inputInfo.get(j).length() - 1));
 
-                    if (j - i <= firstCommandScore) {
+                    if (j - i < firstCommandScore) {
                         commandStructure.put(playerName, firstTeam);
                     } else {
                         commandStructure.put(playerName, secondTeam);
@@ -111,7 +111,7 @@ public class Main {
                 i += firstCommandScore + secondCommandScore;
 
                 // формирование списка запросов
-                while (isRequest(inputInfo.get(i), requestTypes)) {
+                while (i < inputInfo.size() && isRequest(inputInfo.get(i), requestTypes)) {
                     requests.add(inputInfo.get(i));
                     i++;
                 }
@@ -182,38 +182,58 @@ public class Main {
         StringBuilder builder = new StringBuilder();
         Pattern pattern = Pattern.compile("Total goals for \"(.*?)\"");
         Matcher matcher = pattern.matcher(requestLine);
-        String teamName = matcher.group(1);
-        List<int[]> scopes = commandScopes.get(teamName);
-        double sum = 0;
-        for (int[] scope : scopes) {
-            sum += scope[1];
+        if (matcher.find()) {
+            String teamName = matcher.group(1);
+            List<int[]> scopes = commandScopes.get(teamName);
+            double sum = 0;
+            if (scopes == null) {
+                return builder.append(sum);
+            }
+
+            for (int[] scope : scopes) {
+                sum += scope[1];
+            }
+            return builder.append(sum);
         }
-        return builder.append(sum);
+        return builder;
+
     }
 
     private static StringBuilder requestAvrGoalCommand(String requestLine, Map<String, List<int[]>> commandScopes) {
         StringBuilder builder = new StringBuilder();
         Pattern pattern = Pattern.compile("Mean goals per game for \"(.*?)\"");
         Matcher matcher = pattern.matcher(requestLine);
-        String teamName = matcher.group(1);
-        List<int[]> scopes = commandScopes.get(teamName);
-        double sum = 0;
-        for (int[] scope : scopes) {
-            sum += scope[1];
+        if (matcher.find()) {
+            String teamName = matcher.group(1);
+            List<int[]> scopes = commandScopes.get(teamName);
+            double sum = 0;
+            for (int[] scope : scopes) {
+                sum += scope[1];
+            }
+            double avr = sum / scopes.size(); // можно не проверять, так как в задаче гарантируется, что хотя бы одну
+                                              // игру команда сыграла
+            return builder.append(String.format("%.3f", avr));
         }
-        double avr = sum / scopes.size();
-        return builder.append(String.format("%.3f", avr));
+        return builder;
     }
 
     private static StringBuilder requestTotalGoalPlayer(String requestLine,
             Map<String, List<int[]>> goalsScoredInAMatchByPlayerMap) {
+
         StringBuilder builder = new StringBuilder();
         Pattern pattern = Pattern.compile("Total goals by (.*)");
         Matcher matcher = pattern.matcher(requestLine);
-        String playerName = matcher.group(1).trim();
-        List<int[]> playerScores = goalsScoredInAMatchByPlayerMap.get(playerName);
+        if (matcher.find()) {
+            String playerName = matcher.group(1).trim();
+            List<int[]> playerScores = goalsScoredInAMatchByPlayerMap.get(playerName);
+            if (playerScores == null) {
+                return builder.append(0);
+            } else {
+                return builder.append(playerScores.size()); // каждый раз забивает по голу
+            }
 
-        return builder.append(playerScores.size()); // каждый раз забивает по голу
+        }
+        return builder;
     }
 
     private static StringBuilder requestAvrGoalPlayer(String requestLine,
@@ -222,12 +242,20 @@ public class Main {
         StringBuilder builder = new StringBuilder();
         Pattern pattern = Pattern.compile("Mean goals per game by (.*)");
         Matcher matcher = pattern.matcher(requestLine);
-        String playerName = matcher.group(1).trim();
-        String teamName = commandStructure.get(playerName);
-        List<int[]> commandGames = commandScopes.get(teamName);
-        List<int[]> playerGames = goalsScoredInAMatchByPlayerMap.get(playerName);
-        double avr = (double) playerGames.size() / commandGames.size();
-        return builder.append(String.format("%.3f", avr));
+        if (matcher.find()) {
+            String playerName = matcher.group(1).trim();
+            String teamName = commandStructure.get(playerName);
+            List<int[]> commandGames = commandScopes.get(teamName);
+            List<int[]> playerGames = goalsScoredInAMatchByPlayerMap.get(playerName);
+            if (playerGames == null) {
+                return builder.append(0);
+            }
+            double avr = (double) playerGames.size() / commandGames.size(); // можно не проверять, так как в задаче
+                                                                            // гарантируется, что хотя бы одну игру
+                                                                            // команда сыграла
+            return builder.append(String.format("%.3f", avr));
+        }
+        return builder;
     }
 
     private static StringBuilder requestGoalMinutePlayer(String requestLine,
@@ -235,16 +263,23 @@ public class Main {
         StringBuilder builder = new StringBuilder();
         Pattern pattern = Pattern.compile("Goals on minute (\\d+) by (.*)");
         Matcher matcher = pattern.matcher(requestLine);
-        int minute = Integer.parseInt(matcher.group(1));
-        String playerName = matcher.group(2);
-        List<int[]> playerGames = goalsScoredInAMatchByPlayerMap.get(playerName);
-        int countGames = 0;
-        for (int[] game : playerGames) {
-            if (game[1] == minute) {
-                countGames++;
+        if (matcher.find()) {
+            int minute = Integer.parseInt(matcher.group(1));
+            String playerName = matcher.group(2);
+            List<int[]> playerGames = goalsScoredInAMatchByPlayerMap.get(playerName);
+            int countGames = 0;
+            if (playerGames == null) {
+                return builder.append(countGames);
             }
+
+            for (int[] game : playerGames) {
+                if (game[1] == minute) {
+                    countGames++;
+                }
+            }
+            return builder.append(countGames);
         }
-        return builder.append(countGames);
+        return builder;
     }
 
     private static StringBuilder requestGoalFirstMinutesPlayer(String requestLine,
@@ -252,16 +287,23 @@ public class Main {
         StringBuilder builder = new StringBuilder();
         Pattern pattern = Pattern.compile("Goals on first (\\d+) minutes by (.*)");
         Matcher matcher = pattern.matcher(requestLine);
-        int minute = Integer.parseInt(matcher.group(1));
-        String playerName = matcher.group(2);
-        List<int[]> playerGames = goalsScoredInAMatchByPlayerMap.get(playerName);
-        int countGames = 0;
-        for (int[] game : playerGames) {
-            if (game[1] <= minute) {
-                countGames++;
+        if (matcher.find()) {
+            int minute = Integer.parseInt(matcher.group(1));
+            String playerName = matcher.group(2);
+            List<int[]> playerGames = goalsScoredInAMatchByPlayerMap.get(playerName);
+            int countGames = 0;
+            if (playerGames == null) {
+                return builder.append(countGames);
             }
+
+            for (int[] game : playerGames) {
+                if (game[1] <= minute) {
+                    countGames++;
+                }
+            }
+            return builder.append(countGames);
         }
-        return builder.append(countGames);
+        return builder;
     }
 
     private static StringBuilder requestGoalLastMinutesPlayer(String requestLine,
@@ -269,16 +311,23 @@ public class Main {
         StringBuilder builder = new StringBuilder();
         Pattern pattern = Pattern.compile("Goals on last (\\d+) minutes by (.*)");
         Matcher matcher = pattern.matcher(requestLine);
-        int minute = Integer.parseInt(matcher.group(1));
-        String playerName = matcher.group(2);
-        List<int[]> playerGames = goalsScoredInAMatchByPlayerMap.get(playerName);
-        int countGames = 0;
-        for (int[] game : playerGames) {
-            if (game[1] >= 91 - minute) {
-                countGames++;
+        if (matcher.find()) {
+            int minute = Integer.parseInt(matcher.group(1));
+            String playerName = matcher.group(2);
+            List<int[]> playerGames = goalsScoredInAMatchByPlayerMap.get(playerName);
+            int countGames = 0;
+            if (playerGames == null) {
+                return builder.append(countGames);
             }
+
+            for (int[] game : playerGames) {
+                if (game[1] >= 91 - minute) {
+                    countGames++;
+                }
+            }
+            return builder.append(countGames);
         }
-        return builder.append(countGames);
+        return builder;
     }
 
     private static StringBuilder requestScoreOpen(String requestLine,
@@ -288,7 +337,7 @@ public class Main {
             return requestScoreOpenCommand(requestLine, goalsScoredInAMatchByPlayerMap, commandScopes,
                     commandStructure);
         } else {
-            return requestScoreOpenPlayer(requestLine);
+            return requestScoreOpenPlayer(requestLine, goalsScoredInAMatchByPlayerMap);
         }
     }
 
@@ -298,17 +347,23 @@ public class Main {
         StringBuilder builder = new StringBuilder();
         Pattern pattern = Pattern.compile("Score opens by \"(.*?)\"");
         Matcher matcher = pattern.matcher(requestLine);
-        String teamName = matcher.group(1);
-        List<int[]> teamGames = commandScopes.get(teamName);
-        int[] gameNumbers = new int[teamGames.size()];
-        for (int i = 0; i < teamGames.size(); i++) {
-            gameNumbers[i] = teamGames.get(i)[0];
+        if (matcher.find()) {
+            String teamName = matcher.group(1);
+            List<int[]> teamGames = commandScopes.get(teamName);
+            if (teamGames == null) {
+                return builder.append(0);
+            }
+            int[] gameNumbers = new int[teamGames.size()];
+            for (int i = 0; i < teamGames.size(); i++) {
+                gameNumbers[i] = teamGames.get(i)[0];
+            }
+            int count = getCountCommand(gameNumbers, goalsScoredInAMatchByPlayerMap, commandStructure, teamName);
+            return builder.append(count);
         }
-        int count = getCount(gameNumbers, goalsScoredInAMatchByPlayerMap, commandStructure, teamName);
         return builder;
     }
 
-    private static int getCount(int[] gameNumbers, Map<String, List<int[]>> goalsScoredInAMatchByPlayerMap,
+    private static int getCountCommand(int[] gameNumbers, Map<String, List<int[]>> goalsScoredInAMatchByPlayerMap,
             Map<String, String> commandStructure, String teamName) {
         int countTeamOpenScore = 0;
 
@@ -317,6 +372,9 @@ public class Main {
             String teamMinuteMin = "";
             for (Map.Entry<String, List<int[]>> playerGames : goalsScoredInAMatchByPlayerMap.entrySet()) {
                 List<int[]> games = playerGames.getValue();
+                if (games == null) {
+                    return 0;
+                }
                 for (int[] game : games) {
                     if (game[0] == i && game[1] < minuteMin) {
                         minuteMin = game[1];
@@ -332,11 +390,50 @@ public class Main {
         return countTeamOpenScore;
     }
 
-    private static StringBuilder requestScoreOpenPlayer(String requestLine) {
+    private static StringBuilder requestScoreOpenPlayer(String requestLine,
+            Map<String, List<int[]>> goalsScoredInAMatchByPlayerMap) {
         StringBuilder builder = new StringBuilder();
         Pattern pattern = Pattern.compile("Score opens by (.*)");
         Matcher matcher = pattern.matcher(requestLine);
-        String playerName = matcher.group(1).trim();
+        if (matcher.find()) {
+            String playerName = matcher.group(1).trim();
+            List<int[]> playerGames = goalsScoredInAMatchByPlayerMap.get(playerName);
+            if (playerGames == null) {
+                return builder.append(0);
+            }
+            int[] gameNumbers = new int[playerGames.size()];
+            for (int i = 0; i < playerGames.size(); i++) {
+                gameNumbers[i] = playerGames.get(i)[0];
+            }
+            int count = getCountPlayer(gameNumbers, goalsScoredInAMatchByPlayerMap, playerName);
+            return builder.append(count);
+        }
         return builder;
+    }
+
+    private static int getCountPlayer(int[] gameNumbers, Map<String, List<int[]>> goalsScoredInAMatchByPlayerMap,
+            String playerName) {
+        int countPlayerOpenScore = 0;
+
+        for (int i = 0; i < gameNumbers.length; i++) {
+            int minuteMin = 92;
+            String playerMinuteMin = "";
+            for (Map.Entry<String, List<int[]>> playerGames : goalsScoredInAMatchByPlayerMap.entrySet()) {
+                List<int[]> games = playerGames.getValue();
+                if (games == null) {
+                    return 0;
+                }
+                for (int[] game : games) {
+                    if (game[0] == i && game[1] < minuteMin) {
+                        minuteMin = game[1];
+                        playerMinuteMin = playerGames.getKey();
+                    }
+                }
+            }
+            if (playerMinuteMin.equals(playerName)) {
+                countPlayerOpenScore++;
+            }
+        }
+        return countPlayerOpenScore;
     }
 }
