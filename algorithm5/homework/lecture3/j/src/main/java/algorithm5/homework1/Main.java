@@ -55,7 +55,9 @@ public class Main {
 
             }
 
+            // добавляем каждому девайсу по ходу, если они еще не заполнены
             for (DeviceP2p deviceP2p : devicesP2p) {
+
                 deviceP2p.numberStep++;
             }
         }
