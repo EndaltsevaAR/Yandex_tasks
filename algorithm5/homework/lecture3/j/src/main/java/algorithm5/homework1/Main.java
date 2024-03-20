@@ -32,6 +32,7 @@ public class Main {
         Set<PackageP2P> packagesP2p = getPackagesP2p(knumberPackages);
         TreeSet<DeviceP2p> devicesP2p = getDevicesP2p(nNumberDevices, packagesP2p);
 
+        // основной цикл
         while (!isAllDevicesComplex(devicesP2p)) {
             Map<PackageP2P, Integer> notDownloadedPackegesMap = getNotDownloadedPackegesMap(devicesP2p);
             Map<DeviceP2p, PackageP2P> candidatesToLoadToDeviceMap = getCandidatesToLoadToDeviceMap(devicesP2p,
@@ -40,9 +41,36 @@ public class Main {
             // ключ - кому надо загрузить, значение - от кого ожидается загрузка
             Map<DeviceP2p, DeviceP2p> requestsMap = getRequestsMap(candidatesToLoadToDeviceMap, devicesP2p);
 
+            // ключ - кто будет грузить, значение - кому
+            Map<DeviceP2p, DeviceP2p> senderChoiceMap = getSenderChoiceMap(requestsMap);
+
+            // основная магия
+            for (Map.Entry<DeviceP2p, DeviceP2p> pairLoading : senderChoiceMap.entrySet()) {
+                PackageP2P pack = candidatesToLoadToDeviceMap.get(pairLoading.getValue());
+                pairLoading.getValue().notDownloadedPackages.remove(pack);
+
+                Map<DeviceP2p, Integer> values = pairLoading.getValue().values;
+                DeviceP2p key = pairLoading.getKey();
+                values.put(key, values.getOrDefault(key, 0) + 1);
+
+            }
+
+            for (DeviceP2p deviceP2p : devicesP2p) {
+                deviceP2p.numberStep++;
+            }
         }
 
-        return "";
+        int countFirst = 0;
+        StringBuilder builder = new StringBuilder();
+        for (DeviceP2p deviceP2p : devicesP2p) {
+            if (countFirst != 0) {
+                builder.append(deviceP2p.numberStep).append(" ");
+            }
+            if (countFirst == 0) {
+                countFirst++;
+            }
+        }
+        return builder.toString().trim();
     }
 
     private static Set<PackageP2P> getPackagesP2p(int knumberPackages) {
@@ -162,6 +190,54 @@ public class Main {
         return requestsMap;
     }
 
+    private static Map<DeviceP2p, DeviceP2p> getSenderChoiceMap(Map<DeviceP2p, DeviceP2p> requestsMap) {
+        Map<DeviceP2p, Map<DeviceP2p, Integer>> requestMapHandle = getValueMap(requestsMap);
+        return getFinalDecisionMap(requestMapHandle);
+    }
+
+    private static Map<DeviceP2p, Map<DeviceP2p, Integer>> getValueMap(Map<DeviceP2p, DeviceP2p> requestsMap) {
+        Map<DeviceP2p, Map<DeviceP2p, Integer>> requestMapHandle = new HashMap<>();
+        for (Map.Entry<DeviceP2p, DeviceP2p> pair : requestsMap.entrySet()) {
+            Map<DeviceP2p, Integer> map = null;
+            if (!requestMapHandle.containsKey(pair.getValue())) {
+                map = new HashMap<>();
+            } else {
+                map = requestMapHandle.get(pair.getValue());
+            }
+            int value = 0;
+            if (pair.getValue().values.containsKey(pair.getKey())) {
+                value = pair.getValue().values.get(pair.getKey());
+            }
+            map.put(pair.getKey(), value);
+            requestMapHandle.put(pair.getValue(), map);
+        }
+        return requestMapHandle;
+    }
+
+    private static Map<DeviceP2p, DeviceP2p> getFinalDecisionMap(
+            Map<DeviceP2p, Map<DeviceP2p, Integer>> requestMapHandle) {
+        Map<DeviceP2p, DeviceP2p> finalDecisionMap = new TreeMap<>();
+        for (Map.Entry<DeviceP2p, Map<DeviceP2p, Integer>> pair : requestMapHandle.entrySet()) {
+            List<Map.Entry<DeviceP2p, Integer>> list = new ArrayList<>(pair.getValue().entrySet());
+
+            Collections.sort(list, new Comparator<Map.Entry<DeviceP2p, Integer>>() {
+
+                @Override
+                public int compare(Map.Entry<DeviceP2p, Integer> o1, Map.Entry<DeviceP2p, Integer> o2) {
+                    int compareByValue = o2.getValue().compareTo(o1.getValue());
+                    if (compareByValue != 0) {
+                        return compareByValue;
+                    }
+                    return Integer.compare(o1.getKey().idNumberDevice, o2.getKey().idNumberDevice);
+                }
+
+            });
+            finalDecisionMap.put(pair.getKey(), list.get(0).getKey());
+        }
+
+        return finalDecisionMap;
+    }
+
 }
 
 class DeviceP2p {
@@ -169,7 +245,6 @@ class DeviceP2p {
     Map<DeviceP2p, Integer> values;
     Set<PackageP2P> notDownloadedPackages;
     int numberStep;
-    boolean isLeader;
 
     public DeviceP2p(int idNumberDevice) {
         this.idNumberDevice = idNumberDevice;
