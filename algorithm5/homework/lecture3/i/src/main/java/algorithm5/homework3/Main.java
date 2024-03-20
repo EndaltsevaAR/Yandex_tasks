@@ -209,7 +209,7 @@ public class Main {
                 }
 
                 for (int j = 0; j < requests.size(); j++) {
-                    resultingAnswerBuilder.append(requestProcessing(requests.get(j), numberGame, commandScopes,
+                    resultingAnswerBuilder.append(requestProcessing(requests.get(j), commandScopes,
                             commandStructure, goalsScoredInAMatchByPlayerMap)).append("\n");
                 }
                 requests = new ArrayList<>(); // обнуляем список запросов, потому что предыдущий уже обработан
@@ -221,7 +221,7 @@ public class Main {
                 }
 
                 for (int j = 0; j < requests.size(); j++) {
-                    resultingAnswerBuilder.append(requestProcessing(requests.get(j), numberGame, commandScopes,
+                    resultingAnswerBuilder.append(requestProcessing(requests.get(j), commandScopes,
                             commandStructure, goalsScoredInAMatchByPlayerMap)).append("\n");
                 }
                 requests = new ArrayList<>(); // обнуляем список запросов, потому что предыдущий уже обработан
@@ -260,7 +260,7 @@ public class Main {
         return requestTypes;
     }
 
-    private static StringBuilder requestProcessing(String requestLine, int numberGame,
+    private static StringBuilder requestProcessing(String requestLine,
             Map<String, List<int[]>> commandScopes, Map<String, String> commandStructure,
             Map<String, List<int[]>> goalsScoredInAMatchByPlayerMap) {
 
