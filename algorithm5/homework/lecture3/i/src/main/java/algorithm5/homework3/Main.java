@@ -1,8 +1,99 @@
 package algorithm5.homework3;
 
+/**
+Ася Вуткина — известный футбольный комментатор. Будучи профессионалом своего дела, Ася тщательно следит за всеми матчами 
+всех европейских чемпионатов.
+
+Благодаря накопленной информации, Ася может во время трансляции матча сообщить какую-нибудь интересную статистику, 
+например: «Индзаги третий матч подряд забивает гол на 9-й минуте» или «Матерацци никогда не открывает счет в матче».
+
+Но мозг Аси не безграничен, а помнить всю историю футбола просто невозможно. Поэтому Ася попросила вас написать программу, 
+которая собирает статистику матчей и умеет отвечать на некоторые запросы, касающиеся истории футбола.
+
+Информация о матче сообщается программе в следующей форме:
+
+"<Название 1-й команды>" - "<Название 2-й команды>" <Счет 1-й команды>:<Счет 2-й команды>
+
+<Автор 1-го забитого мяча 1-й команды> <Минута, на которой был забит мяч>'
+
+<Автор 2-го забитого мяча 1-й команды> <Минута, на которой был забит мяч>'
+
+...
+
+<Автор последнего забитого мяча 1-й команды> <Минута, на которой был забит мяч>'
+
+<Автор 1-го забитого мяча 2-й команды> <Минута, на которой был забит мяч>'
+
+...
+
+<Автор последнего забитого мяча 2-й команды> <Минута, на которой был забит мяч>'
+
+Запросы к программе бывают следующих видов:
+
+Total goals for <Название команды>
+
+— количество голов, забитое данной командой за все матчи.
+
+Mean goals per game for <Название команды>
+
+— среднее количество голов, забиваемое данной командой за один матч. Гарантирутся, что к моменту подачи такого 
+запроса команда уже сыграла хотя бы один матч.
+
+Total goals by <Имя игрока>
+
+— количество голов, забитое данным игроком за все матчи.
+
+Mean goals per game by <Имя игрока>
+
+— среднее количество голов, забиваемое данным игроком за один матч его команды.
+
+Гарантирутся, что к моменту подачи такого запроса игрок уже забил хотя бы один гол.
+
+Goals on minute <Минута> by <Имя игрока>
+
+— количество голов, забитых данным игроком ровно на указанной минуте матча.
+
+Goals on first <T> minutes by <Имя игрока>
+
+— количество голов, забитых данным игроком на минутах с первой по T-ю включительно.
+
+Goals on last <T> minutes by <Имя игрока>
+
+— количество голов, забитых данным игроком на минутах с (91 - T)-й по 90-ю включительно.
+
+Score opens by <Название команды>
+
+— сколько раз данная команда открывала счет в матче.
+
+Score opens by <Имя игрока>
+
+— сколько раз данный игрок открывал счет в матче.
+
+Формат ввода
+Входной файл содержит информацию о матчах и запросы в том порядке, в котором они поступают в программу Аси Вуткиной.
+
+Во входном файле содержится информация не более чем о 100 матчах, в каждом из которых забито не более 10 голов. 
+Всего в чемпионате участвует не более 20 команд, в каждой команде не более 10 игроков забивают голы.
+
+Все названия команд и имена игроков состоят только из прописных и строчных латинских букв и пробелов, а их длина не превышает 30. 
+Прописные и строчные буквы считаются различными. Имена и названия не начинаются и не оканчиваются пробелами и не содержат двух 
+пробелов подряд. Каждое имя и название содержит хотя бы одну букву.
+
+Минута, на которой забит гол — целое число от 1 до 90 (про голы, забитые в дополнительное время, принято говорить, что они 
+забиты на 90-й минуте).
+
+Для простоты будем считать, что голов в собственные ворота в европейских чемпионатах не забивают, и на одной минуте матча может 
+быть забито не более одного гола (в том числе на 90-й). Во время чемпионата игроки не переходят из одного клуба в другой.
+
+Количество запросов во входном файле не превышает 500.
+
+Формат вывода
+Для каждого запроса во входном файле выведите ответ на этот запрос в отдельной строке. Ответы на запросы, подразумевающие 
+нецелочисленный ответ, должны быть верны с точностью до трех знаков после запятой.
+ */
+
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -136,7 +227,11 @@ public class Main {
                 requests = new ArrayList<>(); // обнуляем список запросов, потому что предыдущий уже обработан
             }
         }
-        return resultingAnswerBuilder.deleteCharAt(resultingAnswerBuilder.length() - 1).toString();
+        if (resultingAnswerBuilder.length() == 0) {
+            return "";
+        } else {
+            return resultingAnswerBuilder.deleteCharAt(resultingAnswerBuilder.length() - 1).toString();
+        }
     }
 
     private static boolean isRequest(String line, Set<String> requestTypes) {
@@ -225,10 +320,7 @@ public class Main {
             }
             double avr = sum / scopes.size(); // можно не проверять, так как в задаче гарантируется, что хотя бы одну
                                               // игру команда сыграла
-            DecimalFormat decimalFormat = new DecimalFormat("#.##");
-            decimalFormat.setMinimumFractionDigits(1);
-            decimalFormat.setMaximumFractionDigits(3);
-            return builder.append(decimalFormat.format(avr));
+            return builder.append(avr);
         }
         return builder;
     }
@@ -269,10 +361,8 @@ public class Main {
             double avr = (double) playerGames.size() / commandGames.size(); // можно не проверять, так как в задаче
                                                                             // гарантируется, что хотя бы одну игру
                                                                             // команда сыграла
-            DecimalFormat decimalFormat = new DecimalFormat("#.##");
-            decimalFormat.setMinimumFractionDigits(1);
-            decimalFormat.setMaximumFractionDigits(3);
-            return builder.append(decimalFormat.format(avr));
+
+            return builder.append(avr);
         }
         return builder;
     }
@@ -420,9 +510,10 @@ public class Main {
             if (playerGames == null) {
                 return builder.append(0);
             }
-            int[] gameNumbers = new int[playerGames.size()];
+
+            Set<Integer> gameNumbers = new HashSet<>();
             for (int i = 0; i < playerGames.size(); i++) {
-                gameNumbers[i] = playerGames.get(i)[0];
+                gameNumbers.add(playerGames.get(i)[0]);
             }
             int count = getCountPlayer(gameNumbers, goalsScoredInAMatchByPlayerMap, playerName);
             return builder.append(count);
@@ -430,11 +521,11 @@ public class Main {
         return builder;
     }
 
-    private static int getCountPlayer(int[] gameNumbers, Map<String, List<int[]>> goalsScoredInAMatchByPlayerMap,
+    private static int getCountPlayer(Set<Integer> gameNumbers, Map<String, List<int[]>> goalsScoredInAMatchByPlayerMap,
             String playerName) {
         int countPlayerOpenScore = 0;
 
-        for (int i = 0; i < gameNumbers.length; i++) {
+        for (Integer gameNumber : gameNumbers) {
             int minuteMin = 92;
             String playerMinuteMin = "";
             for (Map.Entry<String, List<int[]>> playerGames : goalsScoredInAMatchByPlayerMap.entrySet()) {
@@ -443,7 +534,7 @@ public class Main {
                     return 0;
                 }
                 for (int[] game : games) {
-                    if (game[0] == gameNumbers[i] && game[1] < minuteMin) {
+                    if (game[0] == gameNumber && game[1] < minuteMin) {
                         minuteMin = game[1];
                         playerMinuteMin = playerGames.getKey();
                     }
