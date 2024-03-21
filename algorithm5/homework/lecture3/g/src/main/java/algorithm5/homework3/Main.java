@@ -1,87 +1,74 @@
 package algorithm5.homework3;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Scanner;
 import java.util.Set;
+import java.util.StringTokenizer;
 
 public class Main {
     public static final double EPSILON = 1e-9;
     public static final double BILLION = 1e9;
 
-    public static void main(String[] args) throws FileNotFoundException {
-        long startTime = System.currentTimeMillis();
-        File file = new File("input.txt");
-        Scanner scanner = new Scanner(file);
-        Set<Point> points = new HashSet<>();
-        int nNumberPoints = Integer.parseInt(scanner.nextLine());
+    public static void main(String[] args) throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader("input.txt"));
+        int nNumberPoints = Integer.parseInt(reader.readLine());
+        Set<Point> points = new HashSet<>(nNumberPoints);
         for (int i = 0; i < nNumberPoints; i++) {
-            String line = scanner.nextLine();
-            String[] splited = line.split(" ");
-            Point point = new Point(Double.parseDouble(splited[0]), Double.parseDouble(splited[1]));
-            points.add(point);
+            StringTokenizer st = new StringTokenizer(reader.readLine());
+            double x = Double.parseDouble(st.nextToken());
+            double y = Double.parseDouble(st.nextToken());
+            points.add(new Point(x, y));
         }
         System.out.println(finishSquare(points));
-        long end = System.currentTimeMillis();
-        System.out.println("Time is " + (end - startTime));
-        scanner.close();
+        reader.close();
     }
 
-    public static String finishSquare(Set<Point> pointsSet) {
+    public static String finishSquare(Set<Point> points) {
         StringBuilder builder = new StringBuilder();
-        List<Point> pointsList = new ArrayList<>(pointsSet);
         Set<Point> oneOutToThreePointIns = new HashSet<>();
-        if (pointsSet.size() == 1) {
-            builder.append(getThreePoints(pointsList));
-        } else if (pointsSet.size() == 2) {
-            builder.append(getTwoPoints(pointsList));
+        if (points.size() == 1) {
+            builder.append(getThreePoints(points));
+        } else if (points.size() == 2) {
+            builder.append(getTwoPoints(points));
         } else {
-            // поиск есть ли 4 точки, заодно создаем сет из 3 точек
-            for (int i = 0; i < pointsList.size() - 1; i++) {
-                for (int j = i + 1; j < pointsList.size(); j++) {
-                    List<Point[]> possibleRestTwoSquarePoints = getPossibleRestTwoSquarePoints(pointsList.get(i),
-                            pointsList.get(j));
-                    for (Point[] pointPair : possibleRestTwoSquarePoints) {
-                        if (isPointsLong(pointPair)) {
-                            int countPointsInSet = 0;
-                            for (int k = 0; k < pointPair.length; k++) {
-                                if (pointsList.contains(pointPair[k])) {
-                                    Point lastPoint = null;
-                                    if (k == 0) {
-                                        lastPoint = pointPair[1];
-                                    } else {
-                                        lastPoint = pointPair[0];
+            for (Point p1 : points) {
+                for (Point p2 : points) {
+                    if (!p1.equals(p2)) {
+                        List<Point[]> possibleRestTwoSquarePoints = getPossibleRestTwoSquarePoints(p1, p2);
+                        for (Point[] pointPair : possibleRestTwoSquarePoints) {
+                            if (isPointsLong(pointPair)) {
+                                int countPointsInSet = 0;
+                                for (Point p : pointPair) {
+                                    if (points.contains(p)) {
+                                        oneOutToThreePointIns.add(p == p1 ? p2 : p1);
+                                        countPointsInSet++;
                                     }
-                                    oneOutToThreePointIns.add(lastPoint);
-                                    countPointsInSet++;
+                                }
+                                if (countPointsInSet == 2) {
+                                    return "0";
                                 }
                             }
-                            if (countPointsInSet == 2) {
-                                return "0"; // все 4 точки уже в сете
-                            }
                         }
-
                     }
                 }
             }
-            // рассматриваем сет из 3 точек, если он пуст, берем любой из двух точек
             if (!oneOutToThreePointIns.isEmpty()) {
                 Point last = oneOutToThreePointIns.iterator().next();
                 builder.append("1").append("\n");
                 builder.append((long) last.x).append(" ").append((long) last.y).append("\n");
             } else {
-                builder.append(getTwoPoints(pointsList));
+                builder.append(getTwoPoints(points));
             }
-
         }
         return builder.deleteCharAt(builder.length() - 1).toString();
     }
 
-    private static StringBuilder getThreePoints(List<Point> pointsList) {
-        Point point = pointsList.get(0);
+    private static StringBuilder getThreePoints(Set<Point> points) {
+        Point point = points.iterator().next();
         StringBuilder builder = new StringBuilder();
         builder.append("3").append("\n");
         builder.append((long) (point.x + 1)).append(" ").append((long) point.y).append("\n");
@@ -90,37 +77,31 @@ public class Main {
         return builder;
     }
 
-    private static StringBuilder getTwoPoints(List<Point> pointsList) {
+    private static StringBuilder getTwoPoints(Set<Point> points) {
         StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < pointsList.size() - 1; i++) {
-            for (int j = i + 1; j < pointsList.size(); j++) {
-                // if (pointsList.get(i).equals(pointsList.get(j))) {
-                // continue;
-                // } else {
-                List<Point[]> possibleRestTwoSquarePoints = getPossibleRestTwoSquarePoints(pointsList.get(i),
-                        pointsList.get(j));
+        Point[] pointsArray = points.toArray(new Point[0]);
+        for (int i = 0; i < pointsArray.length - 1; i++) {
+            for (int j = i + 1; j < pointsArray.length; j++) {
+                List<Point[]> possibleRestTwoSquarePoints = getPossibleRestTwoSquarePoints(pointsArray[i],
+                        pointsArray[j]);
 
-                for (Point[] points : possibleRestTwoSquarePoints) {
-                    if (isPointsLong(points)) {
+                for (Point[] pointsPair : possibleRestTwoSquarePoints) {
+                    if (isPointsLong(pointsPair)) {
                         builder.append("2").append("\n");
-                        for (Point point : points) {
-                            builder.append((long) point.x).append(" ").append((long) point.y).append("\n");
+                        for (Point p : pointsPair) {
+                            builder.append((long) p.x).append(" ").append((long) p.y).append("\n");
                         }
                         return builder;
                     }
                 }
-                // }
             }
         }
-        return builder; // по идее до сюда не должно дойти
+        return builder;
     }
 
     private static boolean isPointsLong(Point[] points) {
-        for (Point point : points) {
-            if (point.x != (long) point.x || point.y != (long) point.y) {
-                return false;
-            }
-            if (point.x > BILLION || point.y > BILLION) {
+        for (Point p : points) {
+            if (p.x != (long) p.x || p.y != (long) p.y || p.x > BILLION || p.y > BILLION) {
                 return false;
             }
         }
@@ -128,8 +109,6 @@ public class Main {
     }
 
     private static List<Point[]> getPossibleRestTwoSquarePoints(Point point, Point point2) {
-
-        // Находим вектор между двумя заданными точками
         double vectorX = point2.x - point.x;
         double vectorY = point2.y - point.y;
 
@@ -145,14 +124,10 @@ public class Main {
     private static List<Point[]> getPossibleDiagonalSquarePoints(Point point, Point point2) {
         double midX = (point.x + point2.x) / 2.0;
         double midY = (point.y + point2.y) / 2.0;
-
-        // Находим вектор от середины диагонали к одной из диагональных точек
         double vectorX = point.x - midX;
         double vectorY = point.y - midY;
 
-        // Находим вторую вершину квадрата
         Point vertex3 = new Point(midX + vectorY, midY - vectorX);
-        // Находим третью вершину квадрата
         Point vertex4 = new Point(midX - vectorY, midY + vectorX);
 
         List<Point[]> possiblePoints = new ArrayList<>();
@@ -168,7 +143,6 @@ public class Main {
                 .add(new Point[] { new Point(point.x, point.y + length), new Point(point2.x, point2.y + length) });
         possiblePoints
                 .add(new Point[] { new Point(point.x, point.y - length), new Point(point2.x, point2.y - length) });
-        // если будет добавить, поставить еще на ромб
         return possiblePoints;
     }
 
@@ -179,10 +153,8 @@ public class Main {
                 .add(new Point[] { new Point(point.x + length, point.y), new Point(point2.x + length, point2.y) });
         possiblePoints
                 .add(new Point[] { new Point(point.x - length, point.y), new Point(point2.x - length, point2.y) });
-        // если будет добавить, поставить еще на ромб
         return possiblePoints;
     }
-
 }
 
 class Point {
@@ -190,8 +162,8 @@ class Point {
     public double y;
 
     public Point(double x, double y) {
-        this.y = y;
         this.x = x;
+        this.y = y;
     }
 
     @Override
@@ -206,4 +178,13 @@ class Point {
         return Double.compare(point.x, x) == 0 && Double.compare(point.y, y) == 0;
     }
 
+    @Override
+    public int hashCode() {
+        int result = 17;
+        long xBits = Double.doubleToLongBits(x);
+        long yBits = Double.doubleToLongBits(y);
+        result = 31 * result + (int) (xBits ^ (xBits >>> 32));
+        result = 31 * result + (int) (yBits ^ (yBits >>> 32));
+        return result;
+    }
 }
