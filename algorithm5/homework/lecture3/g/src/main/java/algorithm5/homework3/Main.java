@@ -13,6 +13,7 @@ public class Main {
     public static final double BILLION = 1e9;
 
     public static void main(String[] args) throws FileNotFoundException {
+        long startTime = System.currentTimeMillis();
         File file = new File("input.txt");
         Scanner scanner = new Scanner(file);
         Set<Point> points = new HashSet<>();
@@ -24,6 +25,8 @@ public class Main {
             points.add(point);
         }
         System.out.println(finishSquare(points));
+        long end = System.currentTimeMillis();
+        System.out.println("Time is " + (end - startTime));
         scanner.close();
     }
 
@@ -38,33 +41,29 @@ public class Main {
         } else {
             // поиск есть ли 4 точки, заодно создаем сет из 3 точек
             for (int i = 0; i < pointsList.size() - 1; i++) {
-                for (int j = 0; j < pointsList.size(); j++) {
-                    if (pointsList.get(i).equals(pointsList.get(j))) {
-                        continue;
-                    } else {
-                        List<Point[]> possibleRestTwoSquarePoints = getPossibleRestTwoSquarePoints(pointsList.get(i),
-                                pointsList.get(j));
-                        for (Point[] pointPair : possibleRestTwoSquarePoints) {
-                            if (isPointsLong(pointPair)) {
-                                int countPointsInSet = 0;
-                                for (int k = 0; k < pointPair.length; k++) {
-                                    if (pointsList.contains(pointPair[k])) {
-                                        Point lastPoint = null;
-                                        if (k == 0) {
-                                            lastPoint = pointPair[1];
-                                        } else {
-                                            lastPoint = pointPair[0];
-                                        }
-                                        oneOutToThreePointIns.add(lastPoint);
-                                        countPointsInSet++;
+                for (int j = i + 1; j < pointsList.size(); j++) {
+                    List<Point[]> possibleRestTwoSquarePoints = getPossibleRestTwoSquarePoints(pointsList.get(i),
+                            pointsList.get(j));
+                    for (Point[] pointPair : possibleRestTwoSquarePoints) {
+                        if (isPointsLong(pointPair)) {
+                            int countPointsInSet = 0;
+                            for (int k = 0; k < pointPair.length; k++) {
+                                if (pointsList.contains(pointPair[k])) {
+                                    Point lastPoint = null;
+                                    if (k == 0) {
+                                        lastPoint = pointPair[1];
+                                    } else {
+                                        lastPoint = pointPair[0];
                                     }
-                                }
-                                if (countPointsInSet == 2) {
-                                    return "0"; // все 4 точки уже в сете
+                                    oneOutToThreePointIns.add(lastPoint);
+                                    countPointsInSet++;
                                 }
                             }
-
+                            if (countPointsInSet == 2) {
+                                return "0"; // все 4 точки уже в сете
+                            }
                         }
+
                     }
                 }
             }
@@ -94,23 +93,23 @@ public class Main {
     private static StringBuilder getTwoPoints(List<Point> pointsList) {
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < pointsList.size() - 1; i++) {
-            for (int j = 0; j < pointsList.size(); j++) {
-                if (pointsList.get(i).equals(pointsList.get(j))) {
-                    continue;
-                } else {
-                    List<Point[]> possibleRestTwoSquarePoints = getPossibleRestTwoSquarePoints(pointsList.get(i),
-                            pointsList.get(j));
+            for (int j = i + 1; j < pointsList.size(); j++) {
+                // if (pointsList.get(i).equals(pointsList.get(j))) {
+                // continue;
+                // } else {
+                List<Point[]> possibleRestTwoSquarePoints = getPossibleRestTwoSquarePoints(pointsList.get(i),
+                        pointsList.get(j));
 
-                    for (Point[] points : possibleRestTwoSquarePoints) {
-                        if (isPointsLong(points)) {
-                            builder.append("2").append("\n");
-                            for (Point point : points) {
-                                builder.append((long) point.x).append(" ").append((long) point.y).append("\n");
-                            }
-                            return builder;
+                for (Point[] points : possibleRestTwoSquarePoints) {
+                    if (isPointsLong(points)) {
+                        builder.append("2").append("\n");
+                        for (Point point : points) {
+                            builder.append((long) point.x).append(" ").append((long) point.y).append("\n");
                         }
+                        return builder;
                     }
                 }
+                // }
             }
         }
         return builder; // по идее до сюда не должно дойти
