@@ -10,6 +10,7 @@ import java.util.Set;
 
 public class Main {
     public static final double EPSILON = 1e-9;
+    public static final double BILLION = 1e9;
 
     public static void main(String[] args) throws FileNotFoundException {
         File file = new File("input.txt");
@@ -19,7 +20,7 @@ public class Main {
         for (int i = 0; i < nNumberPoints; i++) {
             String line = scanner.nextLine();
             String[] splited = line.split(" ");
-            Point point = new Point(Integer.parseInt(splited[0]), Integer.parseInt(splited[1]));
+            Point point = new Point(Double.parseDouble(splited[0]), Double.parseDouble(splited[1]));
             points.add(point);
         }
         System.out.println(finishSquare(points));
@@ -44,7 +45,7 @@ public class Main {
                         List<Point[]> possibleRestTwoSquarePoints = getPossibleRestTwoSquarePoints(pointsList.get(i),
                                 pointsList.get(j));
                         for (Point[] pointPair : possibleRestTwoSquarePoints) {
-                            if (isPointsInt(pointPair)) {
+                            if (isPointsLong(pointPair)) {
                                 int countPointsInSet = 0;
                                 for (int k = 0; k < pointPair.length; k++) {
                                     if (pointsList.contains(pointPair[k])) {
@@ -71,7 +72,7 @@ public class Main {
             if (!oneOutToThreePointIns.isEmpty()) {
                 Point last = oneOutToThreePointIns.iterator().next();
                 builder.append("1").append("\n");
-                builder.append((int) last.x).append(" ").append((int) last.y).append("\n");
+                builder.append((long) last.x).append(" ").append((long) last.y).append("\n");
             } else {
                 builder.append(getTwoPoints(pointsList));
             }
@@ -84,9 +85,9 @@ public class Main {
         Point point = pointsList.get(0);
         StringBuilder builder = new StringBuilder();
         builder.append("3").append("\n");
-        builder.append((int) (point.x + 1)).append(" ").append((int) point.y).append("\n");
-        builder.append((int) point.x).append(" ").append((int) (point.y + 1)).append("\n");
-        builder.append((int) (point.x + 1)).append(" ").append((int) (point.y + 1)).append("\n");
+        builder.append((long) (point.x + 1)).append(" ").append((long) point.y).append("\n");
+        builder.append((long) point.x).append(" ").append((long) (point.y + 1)).append("\n");
+        builder.append((long) (point.x + 1)).append(" ").append((long) (point.y + 1)).append("\n");
         return builder;
     }
 
@@ -100,11 +101,11 @@ public class Main {
                     List<Point[]> possibleRestTwoSquarePoints = getPossibleRestTwoSquarePoints(pointsList.get(i),
                             pointsList.get(j));
 
-                    builder.append("2").append("\n");
                     for (Point[] points : possibleRestTwoSquarePoints) {
-                        if (isPointsInt(points)) {
+                        if (isPointsLong(points)) {
+                            builder.append("2").append("\n");
                             for (Point point : points) {
-                                builder.append((int) point.x).append(" ").append((int) point.y).append("\n");
+                                builder.append((long) point.x).append(" ").append((long) point.y).append("\n");
                             }
                             return builder;
                         }
@@ -115,9 +116,12 @@ public class Main {
         return builder; // по идее до сюда не должно дойти
     }
 
-    private static boolean isPointsInt(Point[] points) {
+    private static boolean isPointsLong(Point[] points) {
         for (Point point : points) {
-            if (point.x != (int) point.x || point.y != (int) point.y) {
+            if (point.x != (long) point.x || point.y != (long) point.y) {
+                return false;
+            }
+            if (point.x > BILLION || point.y > BILLION) {
                 return false;
             }
         }
