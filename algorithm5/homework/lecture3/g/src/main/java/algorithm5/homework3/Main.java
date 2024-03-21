@@ -71,7 +71,7 @@ public class Main {
             if (!oneOutToThreePointIns.isEmpty()) {
                 Point last = oneOutToThreePointIns.iterator().next();
                 builder.append("1").append("\n");
-                builder.append((int) last.y).append(" ").append((int) last.x).append("\n");
+                builder.append((int) last.x).append(" ").append((int) last.y).append("\n");
             } else {
                 builder.append(getTwoPoints(pointsList));
             }
@@ -84,9 +84,9 @@ public class Main {
         Point point = pointsList.get(0);
         StringBuilder builder = new StringBuilder();
         builder.append("3").append("\n");
-        builder.append((int) (point.y + 1)).append(" ").append((int) point.x).append("\n");
-        builder.append((int) point.y).append(" ").append((int) (point.x + 1)).append("\n");
-        builder.append((int) (point.y + 1)).append(" ").append((int) (point.x + 1)).append("\n");
+        builder.append((int) (point.x + 1)).append(" ").append((int) point.y).append("\n");
+        builder.append((int) point.x).append(" ").append((int) (point.y + 1)).append("\n");
+        builder.append((int) (point.x + 1)).append(" ").append((int) (point.y + 1)).append("\n");
         return builder;
     }
 
@@ -98,7 +98,7 @@ public class Main {
         for (Point[] points : possibleRestTwoSquarePoints) {
             if (isPointsInt(points)) {
                 for (Point point : points) {
-                    builder.append((int) point.y).append(" ").append((int) point.x).append("\n");
+                    builder.append((int) point.x).append(" ").append((int) point.y).append("\n");
                 }
                 return builder;
             }
@@ -154,9 +154,9 @@ public class Main {
         List<Point[]> possiblePoints = new ArrayList<>();
         double length = Math.abs(point2.x - point.x);
         possiblePoints
-                .add(new Point[] { new Point(point.y + length, point.x), new Point(point2.y + length, point2.x) });
+                .add(new Point[] { new Point(point.x, point.y + length), new Point(point2.x, point2.y + length) });
         possiblePoints
-                .add(new Point[] { new Point(point.y - length, point.x), new Point(point2.y - length, point2.x) });
+                .add(new Point[] { new Point(point.x, point.y - length), new Point(point2.x, point2.y - length) });
         // если будет добавить, поставить еще на ромб
         return possiblePoints;
     }
@@ -165,9 +165,9 @@ public class Main {
         List<Point[]> possiblePoints = new ArrayList<>();
         double length = Math.abs(point2.y - point.y);
         possiblePoints
-                .add(new Point[] { new Point(point.y, point.x + length), new Point(point2.y, point2.x + length) });
+                .add(new Point[] { new Point(point.x + length, point.y), new Point(point2.x + length, point2.y) });
         possiblePoints
-                .add(new Point[] { new Point(point.y, point.x - length), new Point(point2.y, point2.x - length) });
+                .add(new Point[] { new Point(point.x - length, point.y), new Point(point2.x - length, point2.y) });
         // если будет добавить, поставить еще на ромб
         return possiblePoints;
     }
@@ -175,10 +175,10 @@ public class Main {
 }
 
 class Point {
-    public double y;
     public double x;
+    public double y;
 
-    public Point(double y, double x) {
+    public Point(double x, double y) {
         this.y = y;
         this.x = x;
     }
@@ -192,7 +192,7 @@ class Point {
             return false;
         }
         Point point = (Point) obj;
-        return Double.compare(point.y, y) == 0 && Double.compare(point.x, x) == 0;
+        return Double.compare(point.x, x) == 0 && Double.compare(point.y, y) == 0;
     }
 
 }
