@@ -92,17 +92,25 @@ public class Main {
 
     private static StringBuilder getTwoPoints(List<Point> pointsList) {
         StringBuilder builder = new StringBuilder();
-        List<Point[]> possibleRestTwoSquarePoints = getPossibleRestTwoSquarePoints(pointsList.get(0),
-                pointsList.get(1));
-        builder.append("2").append("\n");
-        for (Point[] points : possibleRestTwoSquarePoints) {
-            if (isPointsInt(points)) {
-                for (Point point : points) {
-                    builder.append((int) point.x).append(" ").append((int) point.y).append("\n");
-                }
-                return builder;
-            }
+        for (int i = 0; i < pointsList.size() - 1; i++) {
+            for (int j = 0; j < pointsList.size(); j++) {
+                if (pointsList.get(i).equals(pointsList.get(j))) {
+                    continue;
+                } else {
+                    List<Point[]> possibleRestTwoSquarePoints = getPossibleRestTwoSquarePoints(pointsList.get(i),
+                            pointsList.get(j));
 
+                    builder.append("2").append("\n");
+                    for (Point[] points : possibleRestTwoSquarePoints) {
+                        if (isPointsInt(points)) {
+                            for (Point point : points) {
+                                builder.append((int) point.x).append(" ").append((int) point.y).append("\n");
+                            }
+                            return builder;
+                        }
+                    }
+                }
+            }
         }
         return builder; // по идее до сюда не должно дойти
     }

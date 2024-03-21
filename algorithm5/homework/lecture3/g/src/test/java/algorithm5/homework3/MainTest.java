@@ -15,7 +15,7 @@ public class MainTest {
         Set<Point> set = new HashSet<>();
         set.add(point1);
         set.add(point2);
-        assertTrue("2\n1 1\n0 0".equals(Main.finishSquare(set)));
+        assertTrue("2\n0 0\n1 1".equals(Main.finishSquare(set)) || "2\n1 1\n0 0".equals(Main.finishSquare(set)));
     }
 
     @Test
