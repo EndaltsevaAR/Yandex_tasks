@@ -38,6 +38,13 @@ public class Main {
 
     public static long getMinHeight(long wLengthBothParts, long aPartMax, long bPartMax, long[] aPartWords,
             long[] bPartWords) {
+        if (aPartWords.length == 1) {
+            return getHeight(wLengthBothParts - aPartMax, bPartWords);
+        }
+        if (bPartWords.length == 1) {
+            return getHeight(wLengthBothParts - bPartMax, aPartWords);
+        }
+
         long left = aPartMax;
         long right = wLengthBothParts - bPartMax;
         while (left < right) {
