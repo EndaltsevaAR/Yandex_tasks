@@ -40,7 +40,7 @@ public class Main {
         int lengthWalk = (int) walk[0];
         long sumSalk = walk[1];
 
-        int left = 1;
+        int left = Math.max(1, lengthWalk); // 1
         int right = squadsPrefix.length - 1;
         while (left < right) {
             int med = (left + right + 1) / 2;
