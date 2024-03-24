@@ -38,24 +38,29 @@ public class Main {
 
     public static long getMinHeight(long wLengthBothParts, long aPartMax, long bPartMax, long[] aPartWords,
             long[] bPartWords) {
-
-        long minHeight = Long.MAX_VALUE;
-        for (long i = aPartMax; i <= wLengthBothParts - bPartMax; i++) {
-            long aMinHeight = getHeight(i, aPartWords);
-            long bMinHeight = getHeight(wLengthBothParts - i, bPartWords);
-            long maxStepHeight = Math.max(aMinHeight, bMinHeight);
+        long left = aPartMax;
+        long right = wLengthBothParts - bPartMax;
+        while (left < right) {
+            long med = (left + right) / 2;
+            long aMinHeight = getHeight(med, aPartWords);
+            long bMinHeight = getHeight(wLengthBothParts - med, bPartWords);
 
             if ((aMinHeight == aPartWords.length && bMinHeight >= aMinHeight)
                     || (bMinHeight == bPartWords.length && aMinHeight >= bMinHeight)) {
-                return maxStepHeight;
+                return Math.max(getHeight(aPartMax, aPartWords), getHeight(bPartMax, bPartWords));
             }
-            if (maxStepHeight <= minHeight) {
-                minHeight = maxStepHeight;
+
+            if (aMinHeight == bMinHeight) {
+                return aMinHeight;
+            }
+
+            if (aMinHeight < bMinHeight) {
+                right = med;
             } else {
-                break;
+                left = med + 1;
             }
         }
-        return minHeight;
+        return Math.max(getHeight(left, aPartWords), getHeight(wLengthBothParts - left, bPartWords));
     }
 
     private static long getHeight(long lineLength, long[] aPartWords) {
