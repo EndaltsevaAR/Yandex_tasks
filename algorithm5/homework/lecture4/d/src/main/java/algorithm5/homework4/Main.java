@@ -44,6 +44,11 @@ public class Main {
         if (bPartWords.length == 1) {
             return getHeight(wLengthBothParts - bPartMax, aPartWords);
         }
+        long heightAtAMaxs = Math.max(getHeight(aPartMax, aPartWords),
+                getHeight(wLengthBothParts - aPartMax, bPartWords));
+        long heightAtBMaxs = Math.max(getHeight(wLengthBothParts - bPartMax, aPartWords),
+                getHeight(bPartMax, bPartWords));
+        long minHeightAtMaxs = Math.min(heightAtAMaxs, heightAtBMaxs);
 
         long left = aPartMax;
         long right = wLengthBothParts - bPartMax;
@@ -67,7 +72,8 @@ public class Main {
                 left = med + 1;
             }
         }
-        return Math.max(getHeight(left, aPartWords), getHeight(wLengthBothParts - left, bPartWords));
+        return Math.min(minHeightAtMaxs,
+                Math.max(getHeight(left, aPartWords), getHeight(wLengthBothParts - left, bPartWords)));
     }
 
     private static long getHeight(long lineLength, long[] aPartWords) {
