@@ -7,7 +7,7 @@ import java.util.StringTokenizer;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        try (BufferedReader reader = new BufferedReader(new FileReader("33"))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader("input.txt"))) {
             StringTokenizer st = new StringTokenizer(reader.readLine());
             int nHeight = Integer.parseInt(st.nextToken());
             int mLength = Integer.parseInt(st.nextToken());
