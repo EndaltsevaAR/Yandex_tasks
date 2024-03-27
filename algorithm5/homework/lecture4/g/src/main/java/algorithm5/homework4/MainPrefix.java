@@ -1,5 +1,26 @@
 package algorithm5.homework4;
 
+/**
+Сервис Тындекс.Плюс так быстро растет, что для сотрудников и серверов потребовалось потребовалось построить новый офис.
+Участок под застройку представляет из себя клетчатое поле n×m, часть клеток которого пригодна для строительства, а часть нет.
+Новый офис должен выглядеть как знак "плюс"какого-то целого положительного размера k. Знак "плюс"размера k  — это такая 
+клетчатая фигура, состоящая из пяти квадратов k×k клеток, при этом есть один центральный квадрат, 
+а остальные четыре являются его соседями по стороне.
+
+Новый офис должен быть как можно больше, поэтому необходимо найти максимальное k, такое что офис удастся 
+разместить на участке под застройку.
+
+Определите максимальное k. Гарантируется, что он можно построить офис хотя бы с k=1.
+
+Формат ввода
+В первой строке задано два целых числа n и m (1≤n,m≤2000) — длина и ширина участка под застройку.
+В каждой из последующих n строк задана строка, состоящая из m символов, j-й символ в i-й строке равен #, 
+если клетка с координатами (i,j) пригодна для строительства и . иначе.
+
+Формат вывода
+Выведите одно целое положительное число — максимально возможное k.
+ */
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -7,7 +28,7 @@ import java.util.StringTokenizer;
 
 public class MainPrefix {
     public static void main(String[] args) throws IOException {
-        try (BufferedReader reader = new BufferedReader(new FileReader("27"))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader("input.txt"))) {
             StringTokenizer st = new StringTokenizer(reader.readLine());
             int nHeight = Integer.parseInt(st.nextToken());
             int mLength = Integer.parseInt(st.nextToken());
@@ -22,7 +43,7 @@ public class MainPrefix {
                 }
             }
 
-            int[][] prefixHorizontal = new int[nHeight][mLength + 1]; // можно потом будет объединить с вводом
+            int[][] prefixHorizontal = new int[nHeight][mLength + 1];
             int[][] prefixVertical = new int[nHeight + 1][mLength];
 
             for (int i = 0; i < prefixHorizontal.length; i++) {
@@ -79,20 +100,14 @@ public class MainPrefix {
 
     private static boolean isCross(int scale, int y, int x, int[][] prefixHorizontal,
             int[][] prefixVertical) {
-        // if (y + 3 * scale > field.length || x + scale > field[0].length || x - scale
-        // < 0)
-        // return false;
-
-        // проверяем столбец
         for (int i = 0; i < scale; i++) {
             if (!(prefixVertical[y][x + i] - prefixVertical[y - scale][x + i] == scale &&
-                    (prefixVertical[y + scale * 2 - 1][x + i] - prefixVertical[y][x + i] == scale * 2 - 1) &&
+                    (prefixVertical[y + scale * 2][x + i] - prefixVertical[y][x + i] == scale * 2) &&
                     (prefixHorizontal[y + i][x] - prefixHorizontal[y + i][x - scale] == scale) &&
-                    (prefixHorizontal[y + i][x + scale * 2 - 1] - prefixHorizontal[y + i][x] == scale * 2 - 1))) {
+                    (prefixHorizontal[y + i][x + scale * 2] - prefixHorizontal[y + i][x] == scale * 2))) {
                 return false;
             }
         }
-
         return true;
     }
 }

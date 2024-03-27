@@ -7,7 +7,6 @@ import java.util.StringTokenizer;
 
 public class MainDinamic {
     public static void main(String[] args) throws IOException {
-        long startTime = System.currentTimeMillis();
         try (BufferedReader reader = new BufferedReader(new FileReader("input.txt"))) {
             StringTokenizer st = new StringTokenizer(reader.readLine());
             int nHeight = Integer.parseInt(st.nextToken());
@@ -33,11 +32,7 @@ public class MainDinamic {
 
                 }
             }
-            long before = System.currentTimeMillis();
             System.out.println(getScale(nHeight, mWidth, field, maxWidth));
-            long end = System.currentTimeMillis();
-            System.out.println("After reading " + (before - startTime));
-            System.out.println("All is " + (end - startTime));
         }
     }
 
