@@ -8,7 +8,7 @@ import java.util.StringTokenizer;
 public class MainDinamic {
     public static void main(String[] args) throws IOException {
         long startTime = System.currentTimeMillis();
-        try (BufferedReader reader = new BufferedReader(new FileReader("36"))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader("input.txt"))) {
             StringTokenizer st = new StringTokenizer(reader.readLine());
             int nHeight = Integer.parseInt(st.nextToken());
             int mWidth = Integer.parseInt(st.nextToken());
