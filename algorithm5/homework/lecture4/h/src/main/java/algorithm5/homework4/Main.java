@@ -3,90 +3,121 @@ package algorithm5.homework4;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.TreeSet;
 
 public class Main {
     public static void main(String[] args) throws IOException {
         try (BufferedReader reader = new BufferedReader(new FileReader("input.txt"))) {
             StringTokenizer st = new StringTokenizer(reader.readLine());
             int n = Integer.parseInt(st.nextToken());
-            int[] partiesId = new int[n];
-            Set<Party> allParties = new TreeSet<>(Comparator.comparingLong((Party p) -> p.votes));
-            TreeSet<Party> corruptedParties = new TreeSet<>(
-                    Comparator.comparingLong((Party p) -> p.totalCost).reversed());
-
+            Party[] parties = new Party[n];
             long totalVotes = 0;
             for (int i = 0; i < n; i++) {
                 st = new StringTokenizer(reader.readLine());
                 long votes = Long.parseLong(st.nextToken());
                 long bribe = Long.parseLong(st.nextToken());
-                Party party = new Party(i, votes, bribe);
-                partiesId[i] = i;
-                allParties.add(party);
-                if (bribe != -1) {
-                    corruptedParties.add(party);
-                }
                 totalVotes += votes;
+                parties[i] = new Party(i, votes, bribe);
+
             }
-            System.out.println(getElection(totalVotes, partiesId, allParties, corruptedParties));
+            System.out.println(getElection(n, totalVotes, parties));
 
         }
     }
 
-    private static String getElection(long totalVotes, int[] partiesId, Set<Party> allParties,
-            TreeSet<Party> corruptedParties) {
-        Party winner = corruptedParties.first();
-        System.out.println("Party number is " + corruptedParties.first().id);
-        long totalStartVotes = totalVotes / partiesId.length;
-        long totalExtraMaxVotes = 0;
-        int numberStrongPartes = 0;
-        for (Party party : allParties) {
-            if (!party.equals((winner)) && party.votes < totalStartVotes) {
-                totalExtraMaxVotes += totalStartVotes - party.votes;
+    public static String getElection(int n, long totalVotes, Party[] parties) {
+        // if (parties.length == 1) {
+        // return isTotalitarizm(parties);
+        // }
+
+        Arrays.sort(parties);
+        Party winner = parties[0];
+        Party[] partiesWithoutWinners = new Party[n - 1];
+        System.arraycopy(parties, 0, partiesWithoutWinners, 0, winner.id);
+        for (int i = parties.length; i > winner.id; i--) {
+            partiesWithoutWinners[i - 1] = parties[i];
+        }
+
+        Arrays.sort(partiesWithoutWinners, Comparator.comparingLong(party -> party.votes));
+        long[] prefixs = createPrefix(partiesWithoutWinners, n);
+        long left = 0;
+        long right = totalVotes;
+
+        while (left < right) {
+            long med = (left + right) / 2;
+            if (!isPartyLose(winner, med, partiesWithoutWinners, prefixs)) {
+                right = med;
             } else {
-                numberStrongPartes -= partiesId.length - 1 - (party.id); // минус самого победителя
-                break;
+                left = right - 1;
             }
         }
-
-        long extraVotes = 0;
-        long firstParties = 0;
-        if (numberStrongPartes != 0) {
-            extraVotes = totalExtraMaxVotes / numberStrongPartes; // подумать про деление на ноль
-            firstParties = totalExtraMaxVotes % numberStrongPartes;
-        }
-
-        int counterParties = 1;
-        winner.votes = totalStartVotes + 1 + totalExtraMaxVotes;
-        for (Party party : allParties) {
-            if (!party.equals((winner)) && (party.votes >= totalStartVotes)) {
-                party.votes = totalStartVotes - extraVotes;
-                if (counterParties <= firstParties) {
-                    party.votes--;
-                }
-            }
-            counterParties++;
-        }
-
-        Set<Party> sortedPartiesById = new TreeSet<>(Comparator.comparingInt(party -> party.id));
-        sortedPartiesById.addAll(allParties);
 
         StringBuilder builder = new StringBuilder();
-        builder.append(totalStartVotes + 1 + totalExtraMaxVotes + winner.bribe).append("\n");
-        builder.append(winner.id + 1).append("\n"); // номер партии
-        for (Party party : sortedPartiesById) {
-            builder.append(party.votes).append(" ");
+        builder.append(left + winner.bribe).append("\n");
+        builder.append(winner.id).append("\n");
+
+        // перераспределение
+        winner.votes += left;
+
+        if (partiesWithoutWinners.length == 1) {
+            partiesWithoutWinners[0].votes -= left;
+        } else if (partiesWithoutWinners.length > 1) {
+            int index = 1;
+            while (left > 0) {
+                long nextAfterHighestVotes = partiesWithoutWinners[index].votes;
+                for (int i = 0; partiesWithoutWinners[i].votes > nextAfterHighestVotes && left > 0; i++) {
+                    long delta = partiesWithoutWinners[i].votes - nextAfterHighestVotes;
+                    partiesWithoutWinners[i].votes -= Math.min(left, delta);
+                    left -= Math.min(left, delta);
+                }
+                index++;
+            }
+        }
+
+        for (int i = 0; i < partiesWithoutWinners.length; i++) {
+            builder.append(partiesWithoutWinners[i].votes).append(" ");
+        }
+        builder.append(winner.votes);
+        for (int i = winner.id + 1; i < partiesWithoutWinners.length; i++) {
+            builder.append(partiesWithoutWinners[i].votes).append(" ");
         }
 
         return builder.toString().trim();
     }
 
+    private static boolean isPartyLose(Party winner, long med, Party[] parties, long[] prefixs) {
+        long line = winner.votes + med - 1;
+        int indexLineParty = getParty(parties, line, prefixs);
+        return (prefixs[indexLineParty] - (line * (indexLineParty + 1)) >= med);
+    }
+
+    private static int getParty(Party[] parties, long line, long[] prefixs) {
+        int left = 0;
+        int right = parties.length - 1;
+        while (left < right) {
+            int med = (left + right) / 2;
+            if (parties[med].votes >= line) {
+                right = med;
+            } else {
+                left = med + 1;
+            }
+        }
+        return left;
+    }
+
+    private static long[] createPrefix(Party[] parties, int n) {
+        long[] prefixs = new long[n + 1];
+        for (int i = 1; i < prefixs.length; i++) {
+            prefixs[i] = prefixs[i - 1] + parties[i - 1].votes;
+        }
+        return prefixs;
+    }
+
 }
 
-class Party {
+class Party implements Comparable<Party> {
     int id;
     long votes;
     long bribe;
@@ -99,4 +130,8 @@ class Party {
         totalCost = votes - bribe;
     }
 
+    @Override
+    public int compareTo(Party other) {
+        return Long.compare(other.totalCost, this.totalCost);
+    }
 }
