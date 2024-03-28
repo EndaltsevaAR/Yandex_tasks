@@ -18,6 +18,9 @@ public class Main {
                 st = new StringTokenizer(reader.readLine());
                 long votes = Long.parseLong(st.nextToken());
                 long bribe = Long.parseLong(st.nextToken());
+                if (bribe == -1) {
+                    bribe = 1000001L;
+                }
                 totalVotes += votes;
                 parties[i] = new Party(i, votes, bribe);
 
@@ -28,20 +31,16 @@ public class Main {
     }
 
     public static String getElection(int n, long totalVotes, Party[] parties) {
-        // if (parties.length == 1) {
-        // return isTotalitarizm(parties);
-        // }
-
         Arrays.sort(parties);
         Party winner = parties[0];
-        Party[] partiesWithoutWinners = new Party[n - 1];
-        System.arraycopy(parties, 0, partiesWithoutWinners, 0, winner.id);
-        for (int i = parties.length; i > winner.id; i--) {
-            partiesWithoutWinners[i - 1] = parties[i];
+        if (parties.length == 1) {
+            return winner.bribe + "\n" + (winner.id + 1) + "\n" + winner.votes;
         }
 
-        Arrays.sort(partiesWithoutWinners, Comparator.comparingLong(party -> party.votes));
-        long[] prefixs = createPrefix(partiesWithoutWinners, n);
+        Party[] partiesWithoutWinners = new Party[n - 1]; // возможно потом вынести вотдельную функцию
+        System.arraycopy(parties, 1, partiesWithoutWinners, 0, n - 1);
+        Arrays.sort(partiesWithoutWinners, Comparator.comparingLong((Party party) -> party.votes).reversed());
+        long[] prefixs = createPrefix(partiesWithoutWinners, n - 1);
         long left = 0;
         long right = totalVotes;
 
@@ -56,7 +55,7 @@ public class Main {
 
         StringBuilder builder = new StringBuilder();
         builder.append(left + winner.bribe).append("\n");
-        builder.append(winner.id).append("\n");
+        builder.append(winner.id + 1).append("\n");
 
         // перераспределение
         winner.votes += left;
@@ -75,11 +74,11 @@ public class Main {
                 index++;
             }
         }
-
-        for (int i = 0; i < partiesWithoutWinners.length; i++) {
+        Arrays.sort(partiesWithoutWinners, Comparator.comparingLong((Party party) -> party.id));
+        for (int i = 0; i < winner.id; i++) {
             builder.append(partiesWithoutWinners[i].votes).append(" ");
         }
-        builder.append(winner.votes);
+        builder.append(winner.votes).append(" ");
         for (int i = winner.id + 1; i < partiesWithoutWinners.length; i++) {
             builder.append(partiesWithoutWinners[i].votes).append(" ");
         }
@@ -94,6 +93,12 @@ public class Main {
     }
 
     private static int getParty(Party[] parties, long line, long[] prefixs) {
+        if (line > prefixs[0]) {
+            return prefixs.length - 1;
+        }
+        if (line < prefixs[prefixs.length - 1]) {
+            return 0;
+        }
         int left = 0;
         int right = parties.length - 1;
         while (left < right) {
