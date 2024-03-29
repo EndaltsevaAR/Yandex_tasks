@@ -43,13 +43,14 @@ public class Main {
         long[] prefixs = createPrefix(partiesWithoutWinners, n - 1);
         long left = 0;
         long right = totalVotes;
-
-        while (left < right) {
-            long med = (left + right) / 2;
-            if (!isPartyLose(winner, med, partiesWithoutWinners, prefixs)) {
-                right = med;
-            } else {
-                left = right - 1;
+        if (winner.votes <= partiesWithoutWinners[0].votes) {
+            while (left < right) {
+                long med = (left + right) / 2;
+                if (isPartyWin(winner, med, partiesWithoutWinners, prefixs)) {
+                    right = med;
+                } else {
+                    left = med + 1;
+                }
             }
         }
 
@@ -79,31 +80,28 @@ public class Main {
             builder.append(partiesWithoutWinners[i].votes).append(" ");
         }
         builder.append(winner.votes).append(" ");
-        for (int i = winner.id + 1; i < partiesWithoutWinners.length; i++) {
+        for (int i = winner.id; i < partiesWithoutWinners.length; i++) {
             builder.append(partiesWithoutWinners[i].votes).append(" ");
         }
 
         return builder.toString().trim();
     }
 
-    private static boolean isPartyLose(Party winner, long med, Party[] parties, long[] prefixs) {
+    private static boolean isPartyWin(Party winner, long med, Party[] parties, long[] prefixs) {
         long line = winner.votes + med - 1;
         int indexLineParty = getParty(parties, line, prefixs);
-        return (prefixs[indexLineParty] - (line * (indexLineParty + 1)) >= med);
+        return (prefixs[indexLineParty + 1] - (line * (indexLineParty + 1)) <= med);
     }
 
     private static int getParty(Party[] parties, long line, long[] prefixs) {
-        if (line > prefixs[0]) {
-            return prefixs.length - 1;
-        }
-        if (line < prefixs[prefixs.length - 1]) {
+        if (line > prefixs[1]) {
             return 0;
         }
         int left = 0;
         int right = parties.length - 1;
         while (left < right) {
             int med = (left + right) / 2;
-            if (parties[med].votes >= line) {
+            if (parties[med].votes > line) {
                 right = med;
             } else {
                 left = med + 1;
