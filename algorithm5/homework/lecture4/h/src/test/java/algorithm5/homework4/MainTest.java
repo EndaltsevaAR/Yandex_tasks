@@ -45,4 +45,16 @@ public class MainTest {
         String answer = Main.getElection(2, 477, parties);
         assertTrue("239\n1\n239 238".equals(answer));
     }
+
+    @Test
+    void contextTest13() {
+        Party[] parties = new Party[5];
+        parties[0] = new Party(0, 1, 2);
+        parties[1] = new Party(1, 4, 4);
+        parties[2] = new Party(2, 5, 5);
+        parties[3] = new Party(3, 5, 3);
+        parties[4] = new Party(4, 4, 1000001);
+        String answer = Main.getElection(5, 19, parties);
+        assertTrue("4\n4\n1 4 4 6 4".equals(answer));
+    }
 }

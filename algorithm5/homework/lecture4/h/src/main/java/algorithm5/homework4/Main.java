@@ -19,7 +19,7 @@ public class Main {
                 long votes = Long.parseLong(st.nextToken());
                 long bribe = Long.parseLong(st.nextToken());
                 if (bribe == -1) {
-                    bribe = 1000001L;
+                    bribe = 10000001L;
                 }
                 totalVotes += votes;
                 parties[i] = new Party(i, votes, bribe);
@@ -100,11 +100,11 @@ public class Main {
         int left = 0;
         int right = parties.length - 1;
         while (left < right) {
-            int med = (left + right) / 2;
+            int med = (left + right + 1) / 2;
             if (parties[med].votes > line) {
-                right = med;
+                left = med;
             } else {
-                left = med + 1;
+                right = med - 1;
             }
         }
         return left;
@@ -135,6 +135,10 @@ class Party implements Comparable<Party> {
 
     @Override
     public int compareTo(Party other) {
-        return Long.compare(other.totalCost, this.totalCost);
+        int compare = Long.compare(other.totalCost, this.totalCost);
+        if (compare == 0) {
+            compare = Long.compare(this.votes, other.votes);
+        }
+        return compare;
     }
 }
